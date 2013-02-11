@@ -3,18 +3,18 @@
 <head>
 	<title>Programming bootcamp 001</title>
 	<style>
-		background-color: #99FF99;
+		body { background-color: #99FF99; }
 		
 		div { 
 			center; margin: 4em; 
-			color: #009900; 
-			font-size: 24px; 
+			color: #990000; 
+			font-size: 18px; 
 			text-align: center;
 			width: 100%; 
 		}
 	</style>
 </head>
 <body>
-	<div id="someId"><style scoped>color: #990000;</style>Мясо в траве!</div>
-	<div>Не-мясо в траве</div>
+	<div><span>Не-мясо в траве...</span></div>
+	<div id="someId"><style scoped>span { color: #009900; }</style><span>Здесь могло бы быть мясо!<br> (если бы браузеры поддерживали атрибут "scoped" тега "style")</span></div>
 </body>
