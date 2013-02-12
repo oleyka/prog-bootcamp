@@ -15,6 +15,31 @@
 
 <body>
 	<script>
+		/* Solution 2 */
+
+		function clone(original)
+		{
+			switch (typeof original) {
+				case 'object': 
+					if (original == null) return null;
+					if (original instanceof Array) { var newObj = []; } else { var newObj = {}; }
+					for (var el in original) { newObj[el] = clone(original[el]); }
+					return newObj;
+				case 'boolean':
+				case 'number': 
+				case 'string':	return original;
+				default: 		return;
+			}
+			
+		}
+		
+		var MyHonestKennel = clone(KennelData);
+		
+		MyHonestKennel[0].dogs[0].features.honors[0].years[0] = 2003;
+
+		console.log([ KennelData[0].dogs[0].features.honors[0].years[0], MyHonestKennel[0].dogs[0].features.honors[0].years[0] ]);
+
+
 		/* Solution 1 */
 
 		var MyKennel = eval(JSON.stringify(KennelData));
