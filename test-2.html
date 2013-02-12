@@ -2,14 +2,6 @@
 <html>
 <head>
 	<title>Exercise 2</title>
-	<script>
-		function Kennels(num) {
-			this.breed = new Array(num);
-			
-			if (typeof Object.preventExtensions == 'function') { Object.preventExtensions(this); }
-			else { this.stillextensible = 'yes'; }
-		};
-			</script>	
 	<script src="test-2-data.js"></script>
 </head>
 
@@ -17,7 +9,7 @@
 	<script>
 		Object.prototype.foo="bar";
 		
-		/* Solution 2 */
+		/* Solution 2* */
 
 		function clone(original)
 		{
@@ -37,20 +29,25 @@
 		}
 		
 		var MyHonestKennel = clone(KennelData);
-		
-		MyHonestKennel[0].dogs[0].features.honors[0].years[0] = 2003;
 
 		console.log(JSON.stringify(KennelData));
 		console.log(JSON.stringify(MyHonestKennel));
+
+		MyHonestKennel[0].dogs[0].features.honors[0].years[0] = 2003;
 		console.log([ KennelData[0].dogs[0].features.honors[0].years[0], MyHonestKennel[0].dogs[0].features.honors[0].years[0] ]);
 
 
 		/* Solution 1 */
 
-		var MyKennel = eval(JSON.stringify(KennelData));
+		if (typeof KennelData == 'object' && KennelData != null) {
+			var MyKennel = eval(JSON.stringify(KennelData)); } else {
+			var MyKennel = KennelData; 
+		}
 		
+		console.log(JSON.stringify(KennelData));
+		console.log(JSON.stringify(MyHonestKennel));
+
 		MyKennel[0].dogs[0].features.honors[0].years[0] = 2005;
-		
 		console.log([ KennelData[0].dogs[0].features.honors[0].years[0], MyKennel[0].dogs[0].features.honors[0].years[0] ]);
 	</script>
 
