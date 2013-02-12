@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+	<title>Exercise 2</title>
+	<script>
+		function Kennels(num) {
+			this.breed = new Array(num);
+			
+			if (typeof Object.preventExtensions == 'function') { Object.preventExtensions(this); }
+			else { this.stillextensible = 'yes'; }
+		};
+			</script>	
+	<script src="test-2-data.js"></script>
+</head>
+
+<body>
+	<script>
+		var MyKennel = eval(JSON.stringify(KennelData));
+		
+		MyKennel[0].dogs[0].features.honors[0].years[0] = 2005;
+		
+		console.log([ KennelData[0].dogs[0].features.honors[0].years[0], MyKennel[0].dogs[0].features.honors[0].years[0] ]);
+	</script>
+
+</body>	
+</html>
