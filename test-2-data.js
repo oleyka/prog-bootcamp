@@ -1,4 +1,4 @@
-var KennelData = [ {
+var kennel_data = [ {
 	breed: 'GSD',
 	dogs: [	{ name: 'Aston',
 			  id: 123,

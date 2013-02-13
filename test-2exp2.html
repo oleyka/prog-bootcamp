@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+	<title>Exercise 2</title>
+	<script src="test-2-data.js"></script>
+</head>
+
+<body>
+	<script>/*
+function tratata() {
+	x = 1;
+	console.log("inner or outer?: ", x);
+
+	var x = 2;
+	console.log("inner: ", x);
+}
+
+var x = 100;
+tratata();
+console.log("outer: ", x);
+	*/</script>
+	
+	<script>
+var x = 1;
+(function() {
+     x = 2;
+     var x = 3;
+}());
+console.log(x);
+	</script>
+
+</body>	
+</html>

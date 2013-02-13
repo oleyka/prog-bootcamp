@@ -7,18 +7,18 @@
 
 <body>
 	<script>
-		Object.prototype.foo="bar";
+		// Object.prototype.foo="bar";
 		
 		/* Solution 2* */
 
-		function clone(original)
-		{
+		function clone(original) {
 			switch (typeof original) {
 				case 'object': 
 					if (original == null) return null;
 					if (original instanceof Array) { var newObj = []; } else { var newObj = {}; }
 					for (var el in original) { 
-						if (original.hasOwnProperty(el)) { newObj[el] = clone(original[el]); } }
+						if (original.hasOwnProperty(el)) { newObj[el] = clone(original[el]); } 
+					}
 					return newObj;
 				case 'boolean':
 				case 'number': 
@@ -28,27 +28,27 @@
 			
 		}
 		
-		var MyHonestKennel = clone(KennelData);
+		var my_honest_kennel = clone(kennel_data);
 
-		console.log(JSON.stringify(KennelData));
-		console.log(JSON.stringify(MyHonestKennel));
+		console.log(JSON.stringify(kennel_data));
+		console.log(JSON.stringify(my_honest_kennel));
 
-		MyHonestKennel[0].dogs[0].features.honors[0].years[0] = 2003;
-		console.log([ KennelData[0].dogs[0].features.honors[0].years[0], MyHonestKennel[0].dogs[0].features.honors[0].years[0] ]);
+		my_honest_kennel[0].dogs[0].features.honors[0].years[0] = 2003;
+		console.log([ kennel_data[0].dogs[0].features.honors[0].years[0], my_honest_kennel[0].dogs[0].features.honors[0].years[0] ]);
 
 
 		/* Solution 1 */
 
-		if (typeof KennelData == 'object' && KennelData != null) {
-			var MyKennel = eval(JSON.stringify(KennelData)); } else {
-			var MyKennel = KennelData; 
+		if (typeof kennel_data == 'object' && kennel_data != null) {
+			var my_kennel = eval(JSON.stringify(kennel_data)); } else {
+			var my_kennel = kennel_data; 
 		}
 		
-		console.log(JSON.stringify(KennelData));
-		console.log(JSON.stringify(MyHonestKennel));
+		console.log(JSON.stringify(kennel_data));
+		console.log(JSON.stringify(my_honest_kennel));
 
-		MyKennel[0].dogs[0].features.honors[0].years[0] = 2005;
-		console.log([ KennelData[0].dogs[0].features.honors[0].years[0], MyKennel[0].dogs[0].features.honors[0].years[0] ]);
+		my_kennel[0].dogs[0].features.honors[0].years[0] = 2005;
+		console.log([ kennel_data[0].dogs[0].features.honors[0].years[0], my_kennel[0].dogs[0].features.honors[0].years[0] ]);
 	</script>
 
 </body>	
