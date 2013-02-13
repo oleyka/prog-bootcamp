@@ -13,17 +13,21 @@
 
 		function clone(original) {
 			switch (typeof original) {
-				case 'object': 
+				case 'object':				    
 					if (original == null) return null;
-					if (original instanceof Array) { var newObj = []; } else { var newObj = {}; }
-					for (var el in original) { 
-						if (original.hasOwnProperty(el)) { newObj[el] = clone(original[el]); } 
+					var newObj;
+					if (original instanceof Array) {
+						for (var i = 0; i < original.length; i++) { //>
+							newObj[i] = clone(original[i]); 
+						}
+					} else {
+						for (var el in original) { 
+							if (original.hasOwnProperty(el)) { newObj[el] = clone(original[el]); } 
+						}
 					}
 					return newObj;
-				case 'boolean':
-				case 'number': 
-				case 'string':	return original;
-				default: 		return;
+				default:
+					return original;
 			}
 			
 		}

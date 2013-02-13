@@ -27,74 +27,48 @@
 				case 'number': 
 				case 'string':	return origin;
 				default: 		return;
-			}
-			
+			}			
 		}
-
 
 		function compare(origin1, origin2) {
 			if (typeof origin1 != typeof origin2) return DIFFER;
 			switch (typeof origin1) {
 				case 'object': 
-					if (origin1 == null && origin2 == null) return SAME;
+					if (origin1 == null && origin2 == null) return IDENTICAL;
 
 					if (origin1 instanceof Array && origin2 instanceof Array) {
-						if (origin1.length == origin2.length) {
-							for (var i=0; i<length; i++) { //>
-								if (compare(origin1[i], origin2[i]) == DIFFER) { return DIFFER; }
+						if (origin1.length != origin2.length) { return DIFFER; }
+						for (var i in origin1) {
+							if (compare(origin1[i], origin2[i]) == DIFFER) { return DIFFER; }
+						}
+						for (var j in origin2) {
+							if (compare(origin1[j], origin2[j]) == DIFFER) { return DIFFER; }
+						}
+						return IDENTICAL;
+					} else if (origin1 instanceof Object && origin2 instanceof Object) {
+						for (var m in origin1) {
+							if (origin1.hasOwn.Property(m) && origin2.hasOwn.Property(m)) {
+								if (compare(origin1[m], origin2[m]) == DIFFER) { return DIFFER; }
 							}
 						}
-					} else if (origin1 instanceof Object && origin2 instanceof Object) {
-						var sorted1 = sorted2 = {};
-					}					
-					
-					return destination;
+						for (var n in origin2) {
+							if (origin1.hasOwn.Property(n) && origin2.hasOwn.Property(n)) {
+								if (compare(origin1[n], origin2[n]) == DIFFER) { return DIFFER; }
+							}
+						}
+						return IDENTICAL;
+					}										
 				case 'boolean':
 				case 'number': 
 				case 'string':	if (origin1 != origin2) return DIFFER;
-				default: 		return SAME;
+				default: 		return IDENTICAL;
 			}
-			
 		}
-		
-		var x = new Array();
-		x[3] = 4;
-		console.log("Length of x: ", x.length);
-		console.log("x = ", JSON.stringify(x), "\n");
-		console.log("x = ", x, "\n");
-
-		var y = new Array();
-		y[-1] = 13;
-		console.log("Length of y: ", y.length);
-		console.log("y = ", JSON.stringify(y), "\n");
-
-		var z = new Array();
-		z[-1] = 13;
-		z[3] = 4;
-		z[1] = 2;
-		z[2] = null;
-		z[4] = undefined;
-		console.log("Length of z: ", z.length);
-		console.log("z[-1] = ", z[-1]);
-		console.log("z = ", z, "\n");
-		
-		var k = 0;
-		for(var j in z) { console.log("z[", j, "] =", z[j], ";"); k++; }
-		
-		console.log("Total array elements count:", k, "\n");
-
-		var a = b = new Object();
-		a['value'] = "A";
-		b['value'] = "B";
-		
-		console.log ("a['value'] = ", a['value'], "; b['value'] = ", b['value'], "\n");
 
 		var my_honest_kennel = clone(kennel_data);
-
-		console.log(JSON.stringify(kennel_data));
-		console.log(JSON.stringify(my_honest_kennel));
-
 		my_honest_kennel[0].dogs[0].features.honors[0].years[0] = 2003;
+		
+		console.log( (compare(kennel_data[1], my_honest_kennel[1])) ? 'different' : 'identical');
 		console.log([ kennel_data[0].dogs[0].features.honors[0].years[0], my_honest_kennel[0].dogs[0].features.honors[0].years[0] ]);
 	</script>
 
