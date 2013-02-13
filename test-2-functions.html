@@ -26,8 +26,17 @@
 				case 'boolean':
 				case 'number': 
 				case 'string':	return origin;
-				default: 		return;
+				default: 	return null;
 			}			
+		}
+
+		funciton genKeys(origin) {
+			var keys = [];
+
+			for (var i in origin) {
+				if ( hasOwnProperty(origin[i]) ) { keys.push(i); }
+			}
+			return keys;
 		}
 
 		function compare(origin1, origin2) {
@@ -38,26 +47,30 @@
 
 					if (origin1 instanceof Array && origin2 instanceof Array) {
 						if (origin1.length != origin2.length) { return DIFFER; }
-						for (var i in origin1) {
-							if (compare(origin1[i], origin2[i]) == DIFFER) { return DIFFER; }
-						}
-						for (var j in origin2) {
-							if (compare(origin1[j], origin2[j]) == DIFFER) { return DIFFER; }
+
+						var keys1 = genKeys(origin1); keys1.sort();
+						var keys2 = genKeys(origin2); keys2.sort();
+						
+						if (compare(keys1, keys2) == IDENTICAL) { // вот тут при сравнении индексов мы уйдём в бесконечную рекурсию
+							for (var i in origin1) {
+								if (compare(origin1[i], origin2[i]) == DIFFER) { return DIFFER; }
+							}
 						}
 						return IDENTICAL;
 					} else if (origin1 instanceof Object && origin2 instanceof Object) {
-						for (var m in origin1) {
-							if (origin1.hasOwn.Property(m) && origin2.hasOwn.Property(m)) {
-								if (compare(origin1[m], origin2[m]) == DIFFER) { return DIFFER; }
-							}
-						}
-						for (var n in origin2) {
-							if (origin1.hasOwn.Property(n) && origin2.hasOwn.Property(n)) {
-								if (compare(origin1[n], origin2[n]) == DIFFER) { return DIFFER; }
+
+						var keys1 = genKeys(origin1); keys1.sort();
+						var keys2 = genKeys(origin2); keys2.sort();
+						
+						if (compare(keys1, keys2) == IDENTICAL) { // и здесь
+							for (var j in origin1) {
+								if (origin1.hasOwn.Property(j) && origin2.hasOwn.Property(j)) {
+									if (compare(origin1[j], origin2[j]) == DIFFER) { return DIFFER; }
+								}
 							}
 						}
 						return IDENTICAL;
-					}										
+					} else { return DIFFER; }										
 				case 'boolean':
 				case 'number': 
 				case 'string':	if (origin1 != origin2) return DIFFER;
