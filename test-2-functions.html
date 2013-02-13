@@ -7,82 +7,105 @@
 
 <body>
 	<script>
-		var DIFFER = 1;
-		var IDENTICAL = 0;
 		
-		// Object.prototype.foo="bar";
+var DIFFER = true;
+var IDENTICAL = false;
 		
-		/* Solution 2* */
+Object.prototype.foo="bar";
+		
+function keysGen(arg) {
+	var keys = [];
 
-		function clone(origin) {
-			switch (typeof origin) {
-				case 'object': 
-					if (origin == null) return null;
-					if (origin instanceof Array) { var destination = []; } else { var destination = {}; }
-					for (var el in origin) { 
-						if (origin.hasOwnProperty(el)) { destination[el] = clone(origin[el]); } 
-					}
-					return destination;
-				case 'boolean':
-				case 'number': 
-				case 'string':	return origin;
-				default: 	return null;
-			}			
-		}
+	console.log("all properties:", Object.getOwnPropertyNames(arg)); ////////////////////////
 
-		funciton genKeys(origin) {
-			var keys = [];
+	for (var key in arg) {
+		if ( arg.hasOwnProperty(key) ) { keys.push(key); }
+	}
+	return keys.sort();
+}
+		
+Array.prototype.diff = function (array2) {
+	if (this.length != array2.length) return DIFFER;
+	for (var i = 0; i < this.length; i++) {
+		if (this[i] !== array2[i]) return DIFFER;
+	}
+	return IDENTICAL;
+}
 
-			for (var i in origin) {
-				if ( hasOwnProperty(origin[i]) ) { keys.push(i); }
+/* Solution 2* */
+
+function clone(origin) {
+	switch (typeof origin) {
+		case 'object': 
+			if (origin == null) return null;
+			var destination = (origin instanceof Array) ? [] : {};
+			for (var el in origin) { 
+				if (origin.hasOwnProperty(el)) { destination[el] = clone(origin[el]); } 
 			}
-			return keys;
-		}
+			return destination;
+		case 'boolean':
+		case 'number': 
+		case 'string':	return origin;
+		default: 	return null;
+	}			
+}
 
-		function compare(origin1, origin2) {
-			if (typeof origin1 != typeof origin2) return DIFFER;
-			switch (typeof origin1) {
-				case 'object': 
-					if (origin1 == null && origin2 == null) return IDENTICAL;
+function objDiff(origin1, origin2) {
+	if (typeof origin1 != typeof origin2) return DIFFER;
+	
+	switch (typeof origin1) {
+	case 'object': 
+		if (origin1 === null && origin2 === null) return IDENTICAL;
 
-					if (origin1 instanceof Array && origin2 instanceof Array) {
-						if (origin1.length != origin2.length) { return DIFFER; }
+		if (origin1 instanceof Array && origin2 instanceof Array) {
+			var keys1 = keysGen(origin1), keys2 = keysGen(origin2);
 
-						var keys1 = genKeys(origin1); keys1.sort();
-						var keys2 = genKeys(origin2); keys2.sort();
-						
-						if (compare(keys1, keys2) == IDENTICAL) { // вот тут при сравнении индексов мы уйдём в бесконечную рекурсию
-							for (var i in origin1) {
-								if (compare(origin1[i], origin2[i]) == DIFFER) { return DIFFER; }
-							}
-						}
-						return IDENTICAL;
-					} else if (origin1 instanceof Object && origin2 instanceof Object) {
+			if (keys1.diff(keys2)) return DIFFER;
 
-						var keys1 = genKeys(origin1); keys1.sort();
-						var keys2 = genKeys(origin2); keys2.sort();
-						
-						if (compare(keys1, keys2) == IDENTICAL) { // и здесь
-							for (var j in origin1) {
-								if (origin1.hasOwn.Property(j) && origin2.hasOwn.Property(j)) {
-									if (compare(origin1[j], origin2[j]) == DIFFER) { return DIFFER; }
-								}
-							}
-						}
-						return IDENTICAL;
-					} else { return DIFFER; }										
-				case 'boolean':
-				case 'number': 
-				case 'string':	if (origin1 != origin2) return DIFFER;
-				default: 		return IDENTICAL;
+			for (var i in origin1) {
+				if (origin1.hasOwnProperty(i) && origin2.hasOwnProperty(i)) {
+					if (objDiff(origin1[i], origin2[i])) { return DIFFER; }
+				}
 			}
+			return IDENTICAL;
 		}
 
-		var my_honest_kennel = clone(kennel_data);
-		my_honest_kennel[0].dogs[0].features.honors[0].years[0] = 2003;
-		
-		console.log( (compare(kennel_data[1], my_honest_kennel[1])) ? 'different' : 'identical');
-		console.log([ kennel_data[0].dogs[0].features.honors[0].years[0], my_honest_kennel[0].dogs[0].features.honors[0].years[0] ]);
+		if (origin1 instanceof Object && origin2 instanceof Object) {
+			var keys1 = keysGen(origin1), keys2 = keysGen(origin2);
+						
+			if (keys1.diff(keys2))	return DIFFER;
+
+			for (var j in origin1) {
+				if (origin1.hasOwnProperty(j) && origin2.hasOwnProperty(j)) {
+					if (objDiff(origin1[j], origin2[j])) { return DIFFER; }
+				}
+			}
+			return IDENTICAL;
+		} 
+
+		return DIFFER;
+				
+	case 'boolean':
+	case 'number': 
+	case 'string':	if (origin1 != origin2) return DIFFER;
+	default: 	return IDENTICAL;
+	}
+}
+
+var x = {1:'a', 2:'b', 3:'c', 4: ['y','z']};
+// console.log(keysGen(x));
+
+// console.log("getOwnPropertyNames:", Object.getOwnPropertyNames({1:'a', 2:'b', 3:'c'}));
+
+Object.prototype.meow = function() {}; 
+var y = {a: [1,2,3]}; 
+console.log(Object.getOwnPropertyNames(y));
+
+//console.log("x:", x);
+//console.log("getOwnPropertyNames:", Object.getOwnPropertyNames(x) );
+//console.log("getOwnPropertyNames:", Object.getOwnPropertyNames(x[4]) );
+//console.log("getOwnPropertyNames:", x.getOwnPropertyNames() );
+	
 	</script>
 
 </body>	

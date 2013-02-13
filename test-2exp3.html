@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+	<title>Exercise 2</title>
+	<script src="test-2-data.js"></script>
+</head>
+
+<body>
+	<script>
+	
+Object.prototype.foo="bar"; 
+Object.prototype.meow = function() {};  
+
+var y = {a: [1,2,3]}; 
+console.log("Object.getOwnPropertyNames(y): ", Object.getOwnPropertyNames(y));
+
+for (var key in y) {
+	if (y.hasOwnProperty(key)) { 
+		console.log("own: ", key , '=' , y[key]); 
+	} else { 
+		console.log("inherited: ", key , '=' , y[key]); 
+	}	
+}
+
+
+//var x = {1:'a', 2:'b', 3:'c', 4: ['y','z']};
+//console.log("x:", x);
+//console.log(Object.getOwnPropertyNames(x) );
+
+	</script>
+</body>
