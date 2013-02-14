@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head><title>Task 3</title></head>
+<body>
+	<div id="someId0"><a href='a.">&<".jpg'>Some</a> and <a href='a.&quot;&gt;&amp;&lt;&quot;.jpg'>text content</a></div>
+	
+	<div id="someId1">Some text content</div>
+
+	<div id="someId2">Some text <hr> content</div>
+
+	<div id="someId3">Some text content</div>
+
+	<script>
+
+var tester = document.getElementById("someId0").style.display = "none";
+
+var appendix = "... и ещё кое-что";
+
+	// делай раз: конвертирует &, < и > оригинала в &amp;, &lt и &gt;
+document.getElementById("someId1").innerHTML += appendix + " [1]";
+
+	// делай два: вырезает теги из оригинала, 
+	// 			  конвертирует вставляемые &amp; &lt; и &gt; в &amp;amp; и т.п.
+	//			  конвертирует вставляемые &, < и > в &amp;, &lt; и &gt;
+	//												(нельзя вставить тег!)
+	//			  отсутствует в IE<9
+	console.log(document.getElementById("someId2").childNodes[0]);
+if ( document.getElementById("someId2").childNodes.length == 1 & 
+	 document.getElementById("someId2").childNodes[0].nodeName == '#text' ) {
+		document.getElementById("someId2").textContent += appendix + " [2]";
+}
+
+	// делай три: ничего не должен трогать (как проверить?)
+	//			  результирующая строка состоит из двух элементов: childNode[0] и childNode[1]
+document.getElementById("someId3").insertAdjacentHTML('beforeend', appendix + " [3]");
+
+	// ... впрочем, последующее использование innerHTML снова склеивает их в один
+document.getElementById("someId3").innerHTML += '';
+
+	</script>
+</body>
+</html>

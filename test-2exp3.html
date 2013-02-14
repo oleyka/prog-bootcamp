@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>Exercise 2</title>
@@ -22,6 +22,24 @@ for (var key in y) {
 	}	
 }
 
+/*******************************/
+
+function keysGen(arg) {
+	var keys = [];
+
+	for (var key in arg) {
+		if ( arg.hasOwnProperty(key) ) { 
+			keys.push(key); 
+			console.log('own: ', key); 
+		} else {  
+			console.log('inherited: ', key); 
+		}
+	}
+	return keys.sort();
+}
+
+var x = [1,2,3,4];
+console.log(keysGen(x));
 
 //var x = {1:'a', 2:'b', 3:'c', 4: ['y','z']};
 //console.log("x:", x);

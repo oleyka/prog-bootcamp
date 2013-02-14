@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>Exercise 2</title>
@@ -11,26 +11,69 @@
 var DIFFER = true;
 var IDENTICAL = false;
 		
-Object.prototype.foo="bar";
+// Object.prototype.foo="bar";
 		
-function keysGen(arg) {
+Object.prototype.keysGen = function() {
 	var keys = [];
 
-	console.log("all properties:", Object.getOwnPropertyNames(arg)); ////////////////////////
-
-	for (var key in arg) {
-		if ( arg.hasOwnProperty(key) ) { keys.push(key); }
+	for (var key in this) {
+		if ( this.hasOwnProperty(key) ) { 
+			keys.push(key); 
+		}
 	}
 	return keys.sort();
 }
 		
-Array.prototype.diff = function (array2) {
-	if (this.length != array2.length) return DIFFER;
+Array.prototype.diff = function(array) {
+	if (this.length != array.length) return DIFFER;
 	for (var i = 0; i < this.length; i++) {
-		if (this[i] !== array2[i]) return DIFFER;
+		if (this[i] !== array[i]) return DIFFER;
 	}
 	return IDENTICAL;
 }
+
+function objDiff(origin1, origin2) {	
+	if (origin1._visited) return DIFFER;
+	if (typeof origin1 != typeof origin2) return DIFFER;
+	if (origin1 == origin2) return IDENTICAL;
+		
+    switch(typeof origin1) {
+    case 'object':
+    	if( (origin1 instanceof Array  &&   origin2 instanceof Array) ||
+         ( !(origin1 instanceof Array) && !(origin2 instanceof Array) ) ) {
+	
+			var keys1 = origin1.keysGen(), keys2 = origin2.keysGen();
+	
+	        if (keys1.diff(keys2)) return DIFFER;
+	
+	        for (var i in keys1) {
+	        	origin1._visited = true;
+	            var d = objDiff(origin1[keys1[i]], origin2[keys1[i]]);
+	        	delete origin1._visited;
+	            if (d) return DIFFER;
+	        }
+	        return IDENTICAL;
+	    }
+	    return DIFFER;
+    case 'number':
+		if(isNaN(origin1) && isNaN(origin2)) return IDENTICAL;
+	}
+    return DIFFER;
+}
+
+var a = {};
+var b = {};
+a.foo = b;
+b.foo = a;
+console.log('x and y differ?', objDiff(a,b));
+
+
+// console.log("getOwnPropertyNames:", Object.getOwnPropertyNames({1:'a', 2:'b', 3:'c'}));
+//console.log("x:", x);
+//console.log("getOwnPropertyNames:", Object.getOwnPropertyNames(x) );
+//console.log("getOwnPropertyNames:", Object.getOwnPropertyNames(x[4]) );
+//console.log("getOwnPropertyNames:", x.getOwnPropertyNames() );
+
 
 /* Solution 2* */
 
@@ -49,62 +92,6 @@ function clone(origin) {
 		default: 	return null;
 	}			
 }
-
-function objDiff(origin1, origin2) {
-	if (typeof origin1 != typeof origin2) return DIFFER;
-	
-	switch (typeof origin1) {
-	case 'object': 
-		if (origin1 === null && origin2 === null) return IDENTICAL;
-
-		if (origin1 instanceof Array && origin2 instanceof Array) {
-			var keys1 = keysGen(origin1), keys2 = keysGen(origin2);
-
-			if (keys1.diff(keys2)) return DIFFER;
-
-			for (var i in origin1) {
-				if (origin1.hasOwnProperty(i) && origin2.hasOwnProperty(i)) {
-					if (objDiff(origin1[i], origin2[i])) { return DIFFER; }
-				}
-			}
-			return IDENTICAL;
-		}
-
-		if (origin1 instanceof Object && origin2 instanceof Object) {
-			var keys1 = keysGen(origin1), keys2 = keysGen(origin2);
-						
-			if (keys1.diff(keys2))	return DIFFER;
-
-			for (var j in origin1) {
-				if (origin1.hasOwnProperty(j) && origin2.hasOwnProperty(j)) {
-					if (objDiff(origin1[j], origin2[j])) { return DIFFER; }
-				}
-			}
-			return IDENTICAL;
-		} 
-
-		return DIFFER;
-				
-	case 'boolean':
-	case 'number': 
-	case 'string':	if (origin1 != origin2) return DIFFER;
-	default: 	return IDENTICAL;
-	}
-}
-
-var x = {1:'a', 2:'b', 3:'c', 4: ['y','z']};
-// console.log(keysGen(x));
-
-// console.log("getOwnPropertyNames:", Object.getOwnPropertyNames({1:'a', 2:'b', 3:'c'}));
-
-Object.prototype.meow = function() {}; 
-var y = {a: [1,2,3]}; 
-console.log(Object.getOwnPropertyNames(y));
-
-//console.log("x:", x);
-//console.log("getOwnPropertyNames:", Object.getOwnPropertyNames(x) );
-//console.log("getOwnPropertyNames:", Object.getOwnPropertyNames(x[4]) );
-//console.log("getOwnPropertyNames:", x.getOwnPropertyNames() );
 	
 	</script>
 
