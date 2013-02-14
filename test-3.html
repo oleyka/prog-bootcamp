@@ -7,6 +7,7 @@
 	<div id="someId1">Some text content</div>
 	<div id="someId2">Some text content</div>
 	<div id="someId3">Some text content</div>
+	<div id="someId4">Some text content</div>
 
 	<script>
 
@@ -40,6 +41,10 @@ document.getElementById("someId3").insertAdjacentHTML('beforeend', appendix + " 
 
 	// ... впрочем, последующее использование innerHTML снова склеивает их в один
 document.getElementById("someId3").innerHTML += '';
+
+	// делай четыре
+var txt = document.createTextNode(appendix + " [4]");
+document.getElementById("someId4").appendChild(txt);
 
 	</script>
 </body>
