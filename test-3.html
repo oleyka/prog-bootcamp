@@ -5,9 +5,7 @@
 	<div id="someId0"><a href='a.">&<".jpg'>Some</a> and <a href='a.&quot;&gt;&amp;&lt;&quot;.jpg'>text content</a></div>
 	
 	<div id="someId1">Some text content</div>
-
-	<div id="someId2">Some text <hr> content</div>
-
+	<div id="someId2">Some text content</div>
 	<div id="someId3">Some text content</div>
 
 	<script>
@@ -22,12 +20,18 @@ document.getElementById("someId1").innerHTML += appendix + " [1]";
 	// делай два: вырезает теги из оригинала, 
 	// 			  конвертирует вставляемые &amp; &lt; и &gt; в &amp;amp; и т.п.
 	//			  конвертирует вставляемые &, < и > в &amp;, &lt; и &gt;
-	//												(нельзя вставить тег!)
+	//												(нельзя вставить тег)
 	//			  отсутствует в IE<9
-	console.log(document.getElementById("someId2").childNodes[0]);
-if ( document.getElementById("someId2").childNodes.length == 1 & 
-	 document.getElementById("someId2").childNodes[0].nodeName == '#text' ) {
-		document.getElementById("someId2").textContent += appendix + " [2]";
+var no_tags = true;
+var el = document.getElementById("someId2");
+
+for (var i = 0; i < el.childNodes.length; i++) {
+	if ( el.childNodes[i].nodeName != '#text' ) { no_tags = false; }
+}
+if ( no_tags ) {
+	document.getElementById("someId2").textContent += appendix + " [2]";
+} else {
+	console.log("Cannot use method 2");
 }
 
 	// делай три: ничего не должен трогать (как проверить?)
