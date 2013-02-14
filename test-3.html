@@ -2,16 +2,14 @@
 <html>
 <head><title>Task 3</title></head>
 <body>
-	<div id="someId0"><a href='a.">&<".jpg'>Some</a> and <a href='a.&quot;&gt;&amp;&lt;&quot;.jpg'>text content</a></div>
-	
 	<div id="someId1">Some text content</div>
 	<div id="someId2">Some text content</div>
 	<div id="someId3">Some text content</div>
 	<div id="someId4">Some text content</div>
+	
+	<div id="someId100"><span id="sp0">Some</span> <span id="sp1">text</span> <span id="sp2">content</span></div>
 
 	<script>
-
-var tester = document.getElementById("someId0").style.display = "none";
 
 var appendix = "... и ещё кое-что";
 
@@ -38,13 +36,18 @@ if ( no_tags ) {
 	// делай три: ничего не должен трогать (как проверить?)
 	//			  результирующая строка состоит из двух элементов: childNode[0] и childNode[1]
 document.getElementById("someId3").insertAdjacentHTML('beforeend', appendix + " [3]");
-
 	// ... впрочем, последующее использование innerHTML снова склеивает их в один
 document.getElementById("someId3").innerHTML += '';
 
 	// делай четыре
 var txt = document.createTextNode(appendix + " [4]");
 document.getElementById("someId4").appendChild(txt);
+
+	// не делай сто раз
+var tester = document.getElementById("someId100").style.display = "none";
+var txt = document.createTextNode('more ');
+var keyword = document.getElementById("sp1");
+document.getElementById("someId100").insertBefore(txt, keyword);
 
 	</script>
 </body>
