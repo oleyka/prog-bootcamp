@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head><title>Task 3*</title>
+<style>
+div {
+	color: #009900;
+}
+</style>
+</head>
+<body>
+	<div id="someId">Some text content</div>
+	<div id="otherId">Some other text content</div>
+
+	<script>
+
+function obj_to_css_string(css_obj) {
+	var str = "";
+	
+	for(var prop in css_obj) {
+		str += prop + ": " + css_obj[prop] + ";\n";
+	}
+	return " {\n" + str + '}\n';
+	
+}
+	
+function apply0Css(el_id, el_css_obj) {
+	var el = {};
+	
+	if ( !(el = document.getElementById(el_id)) ) return false;
+
+	var style = document.createElement("style");
+	style.innerHTML = "#" + el_id + obj_to_css_string(el_css_obj);
+	
+	el.insertAdjacentElement('beforebegin', style);
+	return true;
+}
+
+function apply1Css(el_id, el_css_obj) {
+	var el = {};
+
+	if ( !(el = document.getElementById(el_id)) ) return false;
+
+	for (var prop in el_css_obj) {
+		el.style[prop] = el_css_obj[prop];
+	}
+	
+	return true;
+}
+
+apply0Css("someId", { "font-weight": "bold", "color": "#000" });
+apply1Css("otherId", { "font-weight": "bold", "color": "#000" });
+
+	</script>
+</body>
+</html>
