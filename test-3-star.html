@@ -19,16 +19,18 @@ div {
 function obj_to_css_string(css_obj) {
 	var str = "";
 	
-	for(var prop in css_obj) {
-		str += prop + ": " + css_obj[prop] + ";\n";
+	for( var prop in css_obj ) {
+		if( css_obj.hasOwnProperty(prop) ) {
+			str += prop + ": " + css_obj[prop] + ";\n";
+		}
 	}
 	return str;
 }
 	
 function apply0Css(el_id, el_css_obj) {
-	var el = {};
+	var el = document.getElementById(el_id);
 	
-	if ( !(el = document.getElementById(el_id)) ) return false;
+	if( !el ) return false;
 
 	var style = document.createElement("style");
 	style.innerHTML = "#" + el_id + " {\n" + obj_to_css_string(el_css_obj) + '}\n';
@@ -40,10 +42,12 @@ function apply0Css(el_id, el_css_obj) {
 function apply1Css(el_id, el_css_obj) {
 	var el = {};
 
-	if ( !(el = document.getElementById(el_id)) ) return false;
+	if( !(el = document.getElementById(el_id)) ) return false;
 
-	for (var prop in el_css_obj) {
-		el.style[prop] = el_css_obj[prop];
+	for( var prop in el_css_obj ) {
+		if( el_css_obj.hasOwnProperty(prop) ) {
+			el.style[prop] = el_css_obj[prop];
+		}
 	}
 	
 	return true;
@@ -55,9 +59,11 @@ function apply2Css(el_id, el_css_obj) {
 	if ( !(el = document.getElementById(el_id)) ) return false;
 
 	for (var prop in el_css_obj) {
-		// assigning the cssText removes whatever style was previously assigned
-		// need to use += instead (which merges the conflicting values nicely)
-		el.style.cssText += obj_to_css_string(el_css_obj);
+		if( el_css_obj.hasOwnProperty(prop) ) {
+			// assigning the cssText removes whatever style was previously assigned
+			// need to use += instead (which merges the conflicting values nicely)
+			el.style.cssText += obj_to_css_string(el_css_obj);
+		}
 	}
 	
 	return true;
