@@ -64,16 +64,8 @@ function clone2(pro_el, new_el_parent) {
 }
 
 // var dupId0 = clone0("elementToClone");
+
 // clone1("elementToClone");
 
 var dup_el = clone2(document.getElementById("elementToClone"));
-
-var nodeList = dup_el.parentNode.childNodes; 
-
-/* for( var i = 0; i<nodeList.length; i++) {
-	console.log(i + " = " + nodeList[i]);
-}
-
-for( var i in nodeList[5]) {
-	console.log(i + " = " + nodeList[5][i]);
-} */
+dup_el.style.opacity = "0.5";
