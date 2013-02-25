@@ -25,7 +25,9 @@ function clone0(id) { // using cloneNode()
 	return clonedElement.id;
 }
 
-function clone1(pro_id) { // durty quick hack throught the use of innerHTML & outerHTML
+// dirty quick hack throught the use of innerHTML & outerHTML
+// no id renaming on this one
+function clone1(pro_id) { 
 	var pro_el = document.getElementById(pro_id);
 
 	if( !pro_el ) {	return false; }
@@ -63,9 +65,9 @@ function clone2(pro_el, new_el_parent) {
 	return new_el;
 }
 
-// var dupId0 = clone0("elementToClone");
+var dupId0 = clone0("elementToClone");
 
-// clone1("elementToClone");
+clone1("elementToClone");
 
 var dup_el = clone2(document.getElementById("elementToClone"));
 dup_el.style.opacity = "0.5";
