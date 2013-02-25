@@ -40,9 +40,9 @@ function apply0Css(el_id, el_css_obj) {
 }
 
 function apply1Css(el_id, el_css_obj) {
-	var el = {};
-
-	if( !(el = document.getElementById(el_id)) ) return false;
+	var el = document.getElementById(el_id);
+	
+	if( !el ) return false;
 
 	for( var prop in el_css_obj ) {
 		if( el_css_obj.hasOwnProperty(prop) ) {

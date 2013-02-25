@@ -36,12 +36,12 @@ input[type="radio"] {
 	<script>
 var domElement = document.getElementById("elementToClone");
 
-var clonedElement = clearClone(domElement, cloneVariantA);
+var clonedElement = cloneAndRename(domElement, function(){return domElement.cloneNode(true)});
 clonedElement.style.opacity = "0.5";
 clonedElement.style.backgroundColor = "#ccffdd";
 domElement.parentNode.appendChild(clonedElement);
 
-clonedElement = clearClone(domElement, cloneVariantB);
+clonedElement = cloneAndRename(domElement, clone);
 clonedElement.style.opacity = "0.5";
 clonedElement.style.backgroundColor = "#ffddcc";
 domElement.parentNode.appendChild(clonedElement);
