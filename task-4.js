@@ -1,73 +1,60 @@
-function assignUniqueId(oId) {
-	if( oId == "" ) return "";
-
-	var counter = 0;
-	
-	while( document.getElementById(oId + counter) ) {
+function genUniqueId(id) {
+	if(id == "") return "_clone";
+	var counter = 1;
+	while(document.getElementById(id + "_clone" + counter)) {
 		counter++;
 	}
+	return id + "_clone" + counter;
+}
 
-	return oId + counter;
-};
-
-function clone0(id) { // using cloneNode()
-	var domElement = document.getElementById(id);
-
-	if( !domElement ) {	return NULL; }
-
-	var clonedElement = domElement.cloneNode(true);
-	if( domElement.id ) { 
-		clonedElement.id = assignUniqueId(domElement.id); 
+function dropElementChildrenIds(element) {
+	var childCount = element.childNodes ? element.childNodes.length : 0;
+	for(var i = 0; i < childCount; i++) {
+		if(element.childNodes[i].tagName && element.childNodes[i].hasAttribute('id')) {
+			element.childNodes[i].removeAttribute('id');
+		}
+		dropElementChildrenIds(element.childNodes[i]);
 	}
-	clonedElement.style.opacity = "0.5";
-	domElement.parentNode.appendChild(clonedElement);
-
-	return clonedElement.id;
+	return element;
 }
 
-// dirty quick hack throught the use of innerHTML & outerHTML
-// no id renaming on this one
-function clone1(pro_id) { 
-	var pro_el = document.getElementById(pro_id);
-
-	if( !pro_el ) {	return false; }
-
-	pro_el.parentNode.innerHTML += pro_el.outerHTML;
-	document.getElementById(pro_id).parentNode.lastChild.style.opacity = "0.5";
-
-	return true;
-}
-
-function clone2(pro_el, new_el_parent) {
-	if( !pro_el ) {	return NULL; }
-	if( !new_el_parent ) { new_el_parent = pro_el.parentNode; }
-	
-	if( pro_el.tagName ) {
-		var new_el = document.createElement(pro_el.tagName);
-		
-		for( var i = 0; i < pro_el.attributes.length; i++ ) {
-			new_el.setAttribute(pro_el.attributes[i].name, pro_el.attributes[i].value);
-		}
-		if( pro_el.id ) {	new_el.id = assignUniqueId(pro_el.id); }
-		new_el_parent.appendChild(new_el);
-		
-		if( pro_el.childNodes ) {
-			var children = pro_el.childNodes.length;
-			for( var i = 0; i < children; i++) {
-				clone2(pro_el.childNodes[i], new_el);
-			}
-		}
+function cloneVariantA(domElement) { // using cloneNode()
+	if(domElement) {
+		var clonedElement = domElement.cloneNode(true);
+		return clonedElement;
 	} else {
-		var new_el = document.createTextNode(pro_el.data);
-		new_el_parent.appendChild(new_el);
+		throw("No element to clone");
 	}
-
-	return new_el;
 }
 
-var dupId0 = clone0("elementToClone");
+function cloneVariantB(domElement) {
+	if(!domElement || !domElement.tagName) return NULL;
+	var clonedElement = document.createElement(domElement.tagName);
+	
+	for(var i = 0; i < domElement.attributes.length; i++) {
+		clonedElement.setAttribute(domElement.attributes[i].name, domElement.attributes[i].value);
+	}
+	
+	var childCount = domElement.childNodes? domElement.childNodes.length : 0;
+	for(var i = 0; i < childCount; i++) {
+		if(domElement.childNodes[i].tagName) {
+			var cloneChild = cloneVariantB(domElement.childNodes[i]);
+		} else {
+			var cloneChild = document.createTextNode(domElement.childNodes[i].data);
+		}
+		clonedElement.appendChild(cloneChild);
+	}
+	return clonedElement;
+}
 
-clone1("elementToClone");
+function clearClone(domElement, cloneFunction) {
+	var clonedElement = cloneFunction(domElement)
+	
+	if(clonedElement.hasAttribute('id')) {
+		clonedElement.setAttribute('id', genUniqueId(clonedElement.attributes['id'].value));
+	}
+	dropElementChildrenIds(clonedElement);
+	
+	return clonedElement;
+}
 
-var dup_el = clone2(document.getElementById("elementToClone"));
-dup_el.style.opacity = "0.5";

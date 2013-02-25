@@ -3,7 +3,7 @@
 <head>
 <title>Cloning DOM Element</title>
 <style>
-.cloneable {    // What does this "." mean? — Means "class".
+.cloneable {
     float: left;
     border: solid 1px #ccc;
     padding: 5px;
@@ -11,18 +11,18 @@
 body {
     font-family: sans-serif;
 }
-input[type="radio"] {   // What is this stuff in brackets? — <input type="radio">
+input[type="radio"] {
     margin-right: 10px;
 }
 </style>
 </head>
 <body>
 
-    <article>   <!-- ← What is that? — CSS3 tag -->
+    <article>
 
         <div id="elementToClone" class="cloneable" style="color: #238;">
             <h3>Input form header</h3>
-            <input type="radio" checked>&larr; Button<br>
+            <input type="radio" checked id="radio">&larr; Button<br>
             <textarea rows="3" cols="20">Text area</textarea><br>
             <select>
             <option value="optOne">Option 1
@@ -32,6 +32,20 @@ input[type="radio"] {   // What is this stuff in brackets? — <input type="radi
         </div>
 
     </article>
-<script src="task-4.js"></script>
+	<script src="task-4.js"></script>
+	<script>
+var domElement = document.getElementById("elementToClone");
+
+var clonedElement = clearClone(domElement, cloneVariantA);
+clonedElement.style.opacity = "0.5";
+clonedElement.style.backgroundColor = "#ccffdd";
+domElement.parentNode.appendChild(clonedElement);
+
+clonedElement = clearClone(domElement, cloneVariantB);
+clonedElement.style.opacity = "0.5";
+clonedElement.style.backgroundColor = "#ffddcc";
+domElement.parentNode.appendChild(clonedElement);
+
+	</script>
 </body>
 </html>
