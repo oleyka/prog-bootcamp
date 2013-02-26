@@ -41,12 +41,12 @@
     </div>
 
 <script>
-$('.from > .cloneable').clone().appendTo('.to');
+$('.from > .cloneable').clone().removeAttr('id').appendTo('.to');
 
-$('.from > .cloneable').css('display', 'visible');
+$('.from > .cloneable').css('display', 'block');
 $('.to > .cloneable').css('display', 'none');
 	
-$(".container").click(function() { $(".container > div").toggle(); });
+$(".container").click(function() { $(".container > div").slideToggle(); });
 </script>
 
 </body>
