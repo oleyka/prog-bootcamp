@@ -42,8 +42,15 @@
 
 <script>
 $(document).ready(function() {
-	$(".from").click(function() { $(this).children().appendTo('.to'); });
-	$(".to").click(function() { $(this).children().appendTo('.from'); });
+	$(".container > div").click(function() { 
+		if ($(this).parent().hasClass('from')) {
+			$(this).appendTo('.to'); 
+		} else { 
+			if ($(this).parent().hasClass('to')) {
+				$(this).appendTo('.from'); 
+			}
+		} 
+	});
 });
 </script>
 
