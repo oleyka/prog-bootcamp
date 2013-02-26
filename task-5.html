@@ -41,15 +41,10 @@
     </div>
 
 <script>
-/* 
-$('.from > .cloneable').clone().removeAttr('id').appendTo('.to');
-$('.to > .cloneable').hide();
-	
-$(".container").click(function() { $(".container > div").slideToggle(); });
-*/
-
-$(".from").click(function() { $(this).children().appendTo('.to'); });
-$(".to").click(function() { $(this).children().appendTo('.from'); });
+$(document).ready(function() {
+	$(".from").click(function() { $(this).children().appendTo('.to'); });
+	$(".to").click(function() { $(this).children().appendTo('.from'); });
+});
 </script>
 
 </body>
