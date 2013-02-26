@@ -42,9 +42,7 @@
 
 <script>
 $('.from > .cloneable').clone().removeAttr('id').appendTo('.to');
-
-$('.from > .cloneable').css('display', 'block');
-$('.to > .cloneable').css('display', 'none');
+$('.to > .cloneable').hide();
 	
 $(".container").click(function() { $(".container > div").slideToggle(); });
 </script>
