@@ -7,14 +7,14 @@ function rotateAngle(element, angle) {
 
 function balanceElement(element) {
 
-	var maxAngle = 12;
+	var maxAngle = 5;
 
 	if (!element.myCount) { 
 		element.myAngle = 0; 
 		element.myCount = 0;
 	} 
 	
-	var newAngle = Math.sin(element.myCount/25) * maxAngle;
+	var newAngle = Math.sin(element.myCount/20) * maxAngle;
 	
 	element.myAngle = newAngle;
 	element.myCount++;

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</script>
+<script>
+$(document).ready(function(){
+  $("p").toggle(function(){
+    $("body").css("background-color","green");},
+    function(){
+    $("body").css("background-color","red");},
+    function(){
+    $("body").css("background-color","yellow");}
+  );
+});
+</script>
+</head>
+<body>
+
+<p>Click me to toggle between different background colors.</p>
+
+</body>
+</html>
+
