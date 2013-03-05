@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simulating jQuery</title>
+	<style>
+.example-box {
+    border-radius: 7px;
+    box-shadow: 0px 10px 15px #866;
+    margin: 50px;
+    padding: 5px;
+    width: 150px;
+    border: solid 1px #800;
+    background-color: #fcc;
+}
+
+.non-selectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.rotating {
+    transform: rotate(10deg);
+    -webkit-transform: rotate(10deg);
+}
+
+body {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 12pt;
+    background-color: #eee;
+}
+
+article {
+    border-radius: 10px;
+    background-color: white;
+    width: 600px;
+    padding: 10px;
+}
+
+.centered {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.vertically-spaced {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+iframe, .iframe-wrap {
+    width: 250px;
+    height: 145px;
+    border: none;
+    overflow: hidden;
+}
+
+pre {
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+}
+	</style>
+	<script>
+/* 
+ * Rotate the given HTML element by a randomly selected value.
+ * Returns that random value.
+ */
+function rotateRandom(div) {
+    var rotateDegree = Math.round(Math.random() * 90 - 45);
+    var rotateCSSProperty = "rotate(" + rotateDegree + "deg)";
+    setBrowserIndependentProperty(div, "transform", rotateCSSProperty);
+
+    return rotateDegree;
+}
+
+/*
+ * Replace number in a text with a new value.
+ */
+function replaceNumber(div, newNumber) {
+    // Replace the string of digits (and a minus) with a given value.
+    var re = new RegExp("([^0-9-]*)[-0-9.]+(.*)");
+    var resultsArray = re.exec(div.innerHTML);
+    div.innerHTML = resultsArray[1] + newNumber + resultsArray[2];
+}
+
+/*
+ * Set the CSS property in a way compatible with many browsers.
+ */
+function setBrowserIndependentProperty(div, property, value) {
+    div.style[property] = value;
+    div.style["-ms-" + property] = value;
+    div.style["-o-" + property] = value;
+    div.style["-moz-" + property] = value;
+    div.style["-webkit-" + property] = value;
+}
+	</script>
+	<script src="task-6.js"></script>
+</head>
+
+<body>
+
+<article class="centered">
+    <div class="rotating non-selectable clickable example-box centered">
+      This text is rotated at <b>10&deg;</b> angle. Try clicking it.
+    </div>
+
+    Create a JavaScript object <code>Wobbler</code> which makes the given HTML element wobble like shown below.
+    <div class="centered iframe-wrap vertically-spaced">
+        <iframe src="http://lionet.info/ta-cal/"></iframe>
+    </div>
+
+    You should be able to make more than one object independently wobbling
+    by executing something like this:
+    <pre>
+    var divs = document.getElementsByClassName("rotating");
+    for(var i = 0; i < divs.length; i++) {
+        new Wobbler(divs[i]);
+    }</pre>
+</article>
+<script>
+    var divs = document.getElementsByClassName("rotating");
+    for(var i = 0; i < divs.length; i++) {
+        new Wobbler(divs[i]);
+    }
+</script>
+
+</body>
+</html>
