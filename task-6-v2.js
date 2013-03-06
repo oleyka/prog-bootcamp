@@ -9,20 +9,12 @@ Wobbler.prototype.balanceElement = function() {
 	this.rotateAngle(angle);
 };
 
-Wobbler.prototype.unbalanceElement = function() {
-	var angle = ((this.rAngle - this.lAngle) * Math.cos(this.myCount/20) - (this.rAngle + this.lAngle)) / 2;
-	this.myCount++;
-	this.rotateAngle(angle);
-};
-
-function Wobbler(element, lAngle, rAngle) {
+function Wobbler(element) {
 	this.element = element;
 	this.myCount = 0;
 	this.maxAngle = 5;
-	this.lAngle = lAngle;
-	this.rAngle = rAngle;
 
 	var self = this;
-	setInterval(function() { self.unbalanceElement(); }, 16);
+	setInterval(function() { self.balanceElement(); }, 16);
 };
 

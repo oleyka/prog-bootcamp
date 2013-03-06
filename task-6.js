@@ -25,4 +25,3 @@ function Wobbler(element, lAngle, rAngle) {
 	var self = this;
 	setInterval(function() { self.unbalanceElement(); }, 16);
 };
-
