@@ -13,6 +13,7 @@ Wobbler.prototype.start = function() {
 	var self = this;
 	this.timerId = setInterval(function() { self.balanceElement(); }, 16); 
 }
+Wobbler.prototype.resume = Wobbler.prototype.start;
 
 Wobbler.prototype.pause = function() {
 	clearInterval(this.timerId);
@@ -26,7 +27,7 @@ function Wobbler(element) {
 	this.start();
 
 	var self = this;
-	this.element.addEventListener("mousedown", function() { self.pause(); }, true);
-    this.element.addEventListener("mouseup", function() { self.start(); }, true);
+	$(this.element).mousedown(function() { self.pause(); });
+	$(this.element).mouseup(function() { self.resume(); });
 };
 
