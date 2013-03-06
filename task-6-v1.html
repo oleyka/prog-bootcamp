@@ -101,7 +101,7 @@ function setBrowserIndependentProperty(div, property, value) {
     div.style["-webkit-" + property] = value;
 }
 	</script>
-	<script src="task-6.js"></script>
+	<script src="task-6-v1.js"></script>
 </head>
 
 <body>
@@ -113,16 +113,26 @@ function setBrowserIndependentProperty(div, property, value) {
 
 
     <div class="rotating non-selectable clickable example-box centered">
-      Everybody loves me.
+      Everybody loves me!
     </div>
-</article>
 
+    Create a JavaScript object <code>Wobbler</code> which makes the given HTML element wobble like shown below.
+    <div class="centered iframe-wrap vertically-spaced">
+        <iframe src="http://lionet.info/ta-cal/"></iframe>
+    </div>
+
+    You should be able to make more than one object independently wobbling
+    by executing something like this:
+    <pre>
+    var divs = document.getElementsByClassName("rotating");
+    for(var i = 0; i < divs.length; i++) {
+        new Wobbler(divs[i]);
+    }</pre>
+</article>
 <script>
     var divs = document.getElementsByClassName("rotating");
-    var wobbles = [];
-    
     for(var i = 0; i < divs.length; i++) {
-        wobbles[i] = new Wobbler(divs[i], Math.round(Math.random() * 90 - 90), Math.round(Math.random() * 90));
+        new Wobbler(divs[i]);
     }
 </script>
 
