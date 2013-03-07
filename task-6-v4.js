@@ -32,9 +32,7 @@ Wobbler.prototype.start = function() {
 
 Wobbler.prototype.resume = function() {
 	if (this.mouseDown) { 
-///		var self = this;
 		$(document).off("mousemove.WobblerSpin");
-
 		this.mouseDown = false;
 		this.start();
 	}
