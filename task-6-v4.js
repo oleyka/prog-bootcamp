@@ -32,7 +32,7 @@ Wobbler.prototype.start = function() {
 
 Wobbler.prototype.resume = function() {
 	if (this.mouseDown) { 
-		var self = this;
+///		var self = this;
 		$(document).off("mousemove.WobblerSpin");
 
 		this.mouseDown = false;
@@ -64,7 +64,7 @@ function Wobbler(element) {
 	this.maxAngle = 5;
 	this.mouseDown = false;
 	
-	this.center = { 
+	this.center = {
 		X: $(this.element).offset().left + $(this.element).outerWidth() / 2,
 		Y: $(this.element).offset().top + $(this.element).outerHeight() / 2 };
 	

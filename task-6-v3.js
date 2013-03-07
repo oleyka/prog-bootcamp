@@ -14,7 +14,15 @@ Wobbler.prototype.start = function() {
 	this.timerId = setInterval(function() { self.balanceElement(); }, 16); 
 }
 
+Wobbler.prototype.resume = function() {
+	if (this.mouseDown) { 
+		this.mouseDown = false;
+		this.start();
+	}
+}
+
 Wobbler.prototype.pause = function() {
+	this.mouseDown = true;
 	clearInterval(this.timerId);
 }
 
@@ -22,11 +30,12 @@ function Wobbler(element) {
 	this.element = element;
 	this.myCount = 0;
 	this.maxAngle = 5;
+	this.mouseDown = false;
 	
 	this.start();
 
 	var self = this;
-	this.element.addEventListener("mousedown", function() { self.pause(); }, true);
-    this.element.addEventListener("mouseup", function() { self.start(); }, true);
+	$(this.element).mousedown(function() { self.pause(); });
+	$(document).mouseup(function() { self.resume(); });
 };
 
