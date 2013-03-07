@@ -28,8 +28,8 @@
 }
 
 .rotating {
-    transform: rotate(10deg);
-    -webkit-transform: rotate(10deg);
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
 }
 
 body {
@@ -42,7 +42,7 @@ article {
     border-radius: 10px;
     background-color: white;
     width: 600px;
-    padding: 10px;
+    padding: 120px 10px;
 }
 
 .centered {
@@ -101,20 +101,15 @@ function setBrowserIndependentProperty(div, property, value) {
     div.style["-webkit-" + property] = value;
 }
 	</script>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.2/jquery.min.js"></script>
-	<script src="task-6-v3.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="task-6-v4.js"></script>
 </head>
 
 <body>
 
 <article class="centered">
     <div class="rotating non-selectable clickable example-box centered">
-      I am just a wobbling &lt;div&gt;.
-    </div>
-
-
-    <div class="rotating non-selectable clickable example-box centered">
-      Everybody loves me!
+      I am just a wobbling &lt;div&gt;. Everybody loves me!
     </div>
 </article>
 
