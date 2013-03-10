@@ -1,7 +1,12 @@
 function angleRad2Deg(angle) { return angle * 180 / Math.PI; }
 function angleDeg2Rad(angle) { return angle * Math.PI / 180; }
-function calcAngle(fromX, fromY, toX, toY) { // in radian, physically correct angle
-	return Math.atan2(fromY - toY, toX - fromX);
+function calcAngle(fromX, fromY, toX, toY) { // in radian
+	return Math.atan2(toY - fromY, toX - fromX);
+}
+function normAngle(angle) {
+	angle -= Math.round((angle - Math.PI)/(2 * Math.PI)) * 2 * Math.PI;
+	if (angle > Math.PI) { angle -= Math.PI*2; }
+	return angle;
 }
 
 Wobbler.prototype.frameInterval = function() {
@@ -10,65 +15,72 @@ Wobbler.prototype.frameInterval = function() {
 	this.frame.countSec = 0; 
 }
 
-Wobbler.prototype.display = function() {
-    var rotateCSSProperty = "rotate(" + angleRad2Deg(this.angle) + "deg)";
+Wobbler.prototype.display = function(angleDeg) {
+	if (typeof(angleDeg) != "undefined") {
+		this.angle = angleDeg2Rad(angleDeg)
+	}
+	var rotateCSSProperty = "rotate(" + angleRad2Deg(-this.angle) + "deg)";
     setBrowserIndependentProperty(this.element, "transform", rotateCSSProperty);
+	this.displayShadow();
 	this.frame.countSec++;
 }
 
+Wobbler.prototype.displayShadow = function () {
+	this.element.style["box-shadow"] = Math.round(-Math.sin(this.angle)*10) + "px " + 
+									   Math.round(Math.cos(this.angle)*10) + "px 15px #866";
+}
+
 Wobbler.prototype.balanceElement = function() {
-	this.angle = -this.maxAngle * Math.sin(this.path);
+	if (this.lAngle == - this.rAngle) {
+		this.angle = this.maxAngle * Math.sin(this.path) / 2;
+	} else {
+		this.angle = this.maxAngle * Math.sin(this.path) / 2 + (this.rAngle + this.lAngle) / 2;
+	}
 	this.path += this.inc;
 	this.display();
 }
 
-Wobbler.prototype.unbalanceElement = function() {
-	this.angle = (this.lAngle - this.rAngle) * Math.sin(this.path) / 2 - (this.rAngle + this.lAngle) / 2;
-		// angle is negated to reflect physically correct value
-	this.path += this.inc;
-	this.display();
-};
-
 Wobbler.prototype.balance = function(lAngleDeg, rAngleDeg) { // 
+	this.movementType = "balance";
 	this.path = 0;		// parameter to sin() for calculating the next angle, 
 						// 0 = middle of interval, -Math.PI/2 = left, Math.PI/2 = right
 	this.inc = 0.05;	// increment to this.path
-	var self = this;
 
 	if (typeof(rAngleDeg) == "undefined") { 
-		this.maxAngle = angleDeg2Rad(lAngleDeg);
-		this.angle = this.maxAngle;	// used by display(), will be recalculated
-
-		var frameInterval = Math.max(16, 250/lAngleDeg); // 0.5degree redraw
-		this.inc = Math.PI*frameInterval/500;
-		this.timerId = setInterval(function() { self.balanceElement(); }, frameInterval); 
+		this.params.rAngle = angleDeg2Rad(lAngleDeg);
+		this.params.lAngle = -this.params.rAngle;
 	} else {
-		this.lAngle = angleDeg2Rad(lAngleDeg);
-		this.rAngle = angleDeg2Rad(rAngleDeg);
-		if ( this.lAngle > this.rAngle ) { [ this.lAngle, this.rAngle ] = [ this.rAngle, this.lAngle ]; }
-		if ( this.lAngle == this.rAngle ) { this.rAngle += Math.PI*2; }
-
-		var frameInterval = Math.max(16, 500/angleRad2Deg(this.rAngle-this.lAngle));
-		this.inc = Math.PI*frameInterval/500;
-		this.timerId = setInterval(function() { self.unbalanceElement(); }, frameInterval); 
+		this.params.lAngle = angleDeg2Rad(lAngleDeg);
+		this.params.rAngle = angleDeg2Rad(rAngleDeg);
+		if ( this.params.lAngle == this.params.rAngle ) { this.params.rAngle += Math.PI*2; }
 	}
+	this.params.maxAngle = this.params.rAngle-this.params.lAngle;
+
+	this.maxAngle = this.params.maxAngle;
+	this.lAngle = this.params.lAngle;
+	this.rAngle = this.params.rAngle;
+	
+	var frameInterval = Math.max(16, 500/angleRad2Deg(this.maxAngle));
+	this.inc = Math.PI*frameInterval/500;
+
+	var self = this;
+	this.timerId = setInterval(function() { self.balanceElement(); }, frameInterval); 
 }
 
 Wobbler.prototype.rotateElement = function() {
 	switch(this.accelerate) {
 	case 0:
-		this.angle = -this.path;
+		this.angle = this.path;
 		break;
 	case -1:
-		this.angle = -this.maxAngle * Math.sin(this.path) - this.lAngle;
+		this.angle = this.maxAngle * Math.sin(this.path) + this.lAngle;
 		break;
 	case 1:
-		this.angle = this.maxAngle * Math.cos(this.path) - this.rAngle;
+		this.angle = -this.maxAngle * Math.cos(this.path) + this.rAngle;
 		break;
 	default:
-		this.angle = this.maxAngle * ( Math.cos(this.path) - 1 ) / 2 - this.lAngle;
+		this.angle = this.maxAngle * ( 1 - Math.cos(this.path) ) / 2 + this.lAngle;
 	}
-//	console.log("Angle: " + (-this.angle) + "; path: " + this.path + "; next path: " + (this.path+this.inc));
 	this.display();
 	
 	this.path += this.inc;
@@ -78,8 +90,11 @@ Wobbler.prototype.rotateElement = function() {
 		var self = this;
 		this.timeoutId = setTimeout(function() { self.rotateElement(); }, 16); 
 	} else {
-		this.angle = -this.rAngle;
+		this.angle = this.rAngle;
 		this.display();
+		if (this.movementType == "balance") {
+			this.balance(angleRad2Deg(this.params.lAngleDeg), angleRad2Deg(this.params.rAngle));
+		}
 	}
 }
 
@@ -91,13 +106,12 @@ Wobbler.prototype.rotate = function(lAngleDeg, rAngleDeg, accelerate) {
 	this.maxAngle = this.rAngle - this.lAngle;
 	this.accelerate = accelerate;
 	this.inc = 0.05; // base inc for Pi/6
-	
-	
+
 	switch(accelerate) {
-	case 0:				// no acceleration
+	case 0:				// linear
 		this.path = this.lAngle;
 		this.pathEnd = this.rAngle;
-		this.inc = this.maxAngle / 90; // *(Math.PI/3.82)/60
+		this.inc = this.maxAngle / 90;
 		break;
 	case -1:			// decelerate
 		this.path = 0;
@@ -113,67 +127,45 @@ Wobbler.prototype.rotate = function(lAngleDeg, rAngleDeg, accelerate) {
 		this.path = 0;
 		this.pathEnd = Math.PI;
 		this.inc *= Math.PI/(1.5*Math.abs(this.maxAngle));
-	}
-	
-	console.log(this);
+	}	
 	this.rotateElement();
 }
 		
-
-Wobbler.prototype.adjust = function() { // to rewrite!
-	var startAngle = this.angleDeg;
-	var endAngle = this.angleDeg;
-	
-	if (startAngle > this.maxAngleDeg) { 
-		var endAngle = this.maxAngleDeg; 
-	} else if (startAngle < -this.maxAngleDeg) {
-		var endAngle = -this.maxAngleDeg; 
-	}
-	
-	var self = this;
-	if (startAngle == endAngle) {
-		this.inc = Math.round(20 * Math.asin(this.angleDeg/this.maxAngleDeg));
-		this.start();
-	} else {
-		this.timerId = setInterval(function() { self.rotateElement(startAngle, endAngle); }, 100); 
-	}
-}
-
-Wobbler.prototype.start = function() {
-	var self = this;
-	this.timerId = setInterval(function() { self.balanceElement(); }, 100); 
-}
-
 Wobbler.prototype.resume = function() {
 	if (this.mouseDown) { 
-		$(document).off("mousemove.Wobbler" + this.id + "Spin");
+		$(document).off("mousemove.Wobbler" + this.id);
+		$(document).off("mouseup.Wobbler" + this.id);
 		this.mouseDown = false;
-		this.adjust();
 	}
-}
-
-Wobbler.prototype.pause = function() {
-	// fix the angle difference b/w the mouse and the element
-	this.mouseShiftAngle = this.angle - angleDeg2Rad(calcAngle(this.center.X, this.center.Y, event.pageX, event.pageY));
-
-	this.mouseDown = true;
-	clearInterval(this.timerId);
-	
-	var self = this;
-	$(document).on("mousemove.Wobbler" + this.id + "Spin", function() { self.follow(); });
+	if (this.movementType == "balance") {
+		this.angle = normAngle(this.angle);
+		
+		console.log(this.id);
+		console.log(this.angle, this.params.lAngle);
+		
+		this.rotate(angleRad2Deg(this.angle), angleRad2Deg(this.params.lAngle), 2);
+	}
 }
 
 Wobbler.prototype.follow = function() {
-	this.mouseAngle = angleDeg2Rad(calcAngle(this.center.X, this.center.Y, event.pageX, event.pageY ));
-	this.angle = this.mouseAngle + this.mouseShiftAngle;
-	this.display();
-}
-
-Wobbler.prototype.stop = function() {
 	this.mouseDown = true;
 	clearInterval(this.timerId);
 	clearTimeout(this.timeoutId);
-	this.mouseDown = false;
+	
+	// fix the angle difference b/w the mouse and the element
+	this.angle = normAngle(this.angle);
+	this.mouseShiftAngle = calcAngle(this.center.X, this.center.Y, event.pageX, event.pageY) + this.angle;
+	this.element.style.cursor = "pointer";
+	
+	var self = this;
+	$(document).on("mousemove.Wobbler" + this.id, function() { self.followMouse(); });
+	$(document).on("mouseup.Wobbler" + this.id, function() { self.resume(); });
+}
+
+Wobbler.prototype.followMouse = function() {
+	this.mouseAngle = calcAngle(this.center.X, this.center.Y, event.pageX, event.pageY);		
+	this.angle = - this.mouseAngle + this.mouseShiftAngle;
+	this.display();
 }
 
 function Wobbler(element, id, frame) {
@@ -183,6 +175,9 @@ function Wobbler(element, id, frame) {
 		Y: $(element).outerHeight() / 2 + $(element).offset().top };
 	
 	this.id = id;
+	this.angle = 0;
+	this.movementType = "";
+	this.params = { 'lAngle': null, 'rAngle': null, 'maxAngle': null };
 	this.frame = { 'count': 0, 'countSec': 0 };
 
 	this.mouseDown = false;
@@ -194,9 +189,6 @@ function Wobbler(element, id, frame) {
 		this.frameIntervalId = setInterval(function() { self.frameInterval(); }, 1000); 
 	}
 
-	$(this.element).on("mousedown.Wobbler" + this.id, function() { self.pause(); });
-	$(document).on("mouseup.Wobbler" + this.id, function() { self.stop(); });
-	
-	/* $(document).on("mouseup.Wobbler" + this.id, function() { self.resume(); }); */
-};
+	$(this.element).on("mousedown.Wobbler" + this.id, function() { self.follow(); });
+}
 
