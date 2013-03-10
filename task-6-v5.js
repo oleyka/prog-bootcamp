@@ -40,10 +40,11 @@ Wobbler.prototype.balanceElement = function() {
 	this.display();
 }
 
-Wobbler.prototype.balance = function(lAngleDeg, rAngleDeg) { // 
+Wobbler.prototype.balance = function(lAngleDeg, rAngleDeg, path) { // 
 	this.movementType = "balance";
-	this.path = 0;		// parameter to sin() for calculating the next angle, 
-						// 0 = middle of interval, -Math.PI/2 = left, Math.PI/2 = right
+	if (typeof(path) == "undefined") { 
+		this.path = 0;	// 0 = middle of interval, -Math.PI/2 = left, Math.PI/2 = right
+	} else { this.path = path; }					
 	this.inc = 0.05;	// increment to this.path
 
 	if (typeof(rAngleDeg) == "undefined") { 
@@ -92,8 +93,9 @@ Wobbler.prototype.rotateElement = function() {
 	} else {
 		this.angle = this.rAngle;
 		this.display();
-		if (this.movementType == "balance") {
-			this.balance(angleRad2Deg(this.params.lAngleDeg), angleRad2Deg(this.params.rAngle));
+		if (this.movementType == "balance") { 
+			// returning to the left angle is not always the best option
+			this.balance(angleRad2Deg(this.params.lAngle), angleRad2Deg(this.params.rAngle), -Math.PI/2);
 		}
 	}
 }
@@ -138,11 +140,6 @@ Wobbler.prototype.resume = function() {
 		this.mouseDown = false;
 	}
 	if (this.movementType == "balance") {
-		this.angle = normAngle(this.angle);
-		
-		console.log(this.id);
-		console.log(this.angle, this.params.lAngle);
-		
 		this.rotate(angleRad2Deg(this.angle), angleRad2Deg(this.params.lAngle), 2);
 	}
 }
@@ -152,7 +149,6 @@ Wobbler.prototype.follow = function() {
 	clearInterval(this.timerId);
 	clearTimeout(this.timeoutId);
 	
-	// fix the angle difference b/w the mouse and the element
 	this.angle = normAngle(this.angle);
 	this.mouseShiftAngle = calcAngle(this.center.X, this.center.Y, event.pageX, event.pageY) + this.angle;
 	this.element.style.cursor = "pointer";
