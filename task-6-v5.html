@@ -5,7 +5,7 @@
 	<style>
 .example-box {
     border-radius: 7px;
-/*    box-shadow: 0px 10px 15px #866; */
+    box-shadow: 0px 10px 15px #866;
     margin: 50px;
     padding: 5px;
     text-align: center;
@@ -127,24 +127,25 @@ function setBrowserIndependentProperty(div, property, value) {
       I am just a wobbling &lt;div&gt;. Everybody spins me!
     </div>
 
-    <div class="rotating non-selectable clickable example-box centered">
+<!--    <div class="rotating non-selectable clickable example-box centered">
       I am the cutest one here...
     </div>
 
     <div class="rotating non-selectable clickable example-box centered">
       I am yet another one. Everybody spins me, too!
-    </div>
+    </div> -->
 	<div class="frame-rate"></div>
 </article>
 
 <script>
-	$(".rotating").each(function(i, element) { this.wobbler = new Wobbler(element, i, true); })
+//	$(".rotating").each(function(i, element) { this.wobbler = new Wobbler(element, i, true); })
 	
     var divs = document.getElementsByClassName("rotating");
-	
+
+	divs[0].wobbler = new Wobbler(divs[0], 0, true)	
 	divs[0].wobbler.balance(-20, 20);		//
 //	divs[1].wobbler.balance(40, 20);		//
-	divs[2].wobbler.balance(-10, 70);		//
+//	divs[2].wobbler.balance(-10, 70);		//
 
 </script>
 
