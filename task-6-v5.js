@@ -3,10 +3,30 @@ function angleDeg2Rad(angle) { return angle * Math.PI / 180; }
 function calcAngle(fromX, fromY, toX, toY) { // in radian
 	return Math.atan2(toY - fromY, toX - fromX);
 }
-function normAngle(angle) {
+function normAngle(angle) { // (-Pi, Pi]
 	angle -= Math.round((angle - Math.PI)/(2 * Math.PI)) * 2 * Math.PI;
 	if (angle > Math.PI) { angle -= Math.PI*2; }
 	return angle;
+}
+
+function makeAngleBigger(angle, refAngle) {
+	var newAngle = angle;
+	
+	if (angle < refAngle) {
+		var t = Math.ceil((refAngle - angle)/ Math.PI) + 1;
+		newAngle += Math.PI*2*t;
+	}
+	return newAngle;
+}
+
+function makeAngleSmaller(angle, refAngle) {
+	var newAngle = angle;
+	
+	if (angle > refAngle) {
+		var t = Math.ceil((refAngle - angle)/ Math.PI) + 1;
+		newAngle -= Math.PI*2*t;
+	}
+	return newAngle;
 }
 
 Wobbler.prototype.frameInterval = function() {
@@ -62,7 +82,7 @@ Wobbler.prototype.balance = function(lAngleDeg, rAngleDeg, path) { //
 	this.rAngle = this.params.rAngle;
 	
 	var frameInterval = Math.max(16, 500/angleRad2Deg(this.maxAngle));
-	this.inc = Math.PI*frameInterval/500;
+	this.inc = Math.PI*frameInterval/1000; //500
 
 	var self = this;
 	this.timerId = setInterval(function() { self.balanceElement(); }, frameInterval); 
@@ -93,9 +113,9 @@ Wobbler.prototype.rotateElement = function() {
 	} else {
 		this.angle = this.rAngle;
 		this.display();
-		if (this.movementType == "balance") { 
-			// returning to the left angle is not always the best option
-			this.balance(angleRad2Deg(this.params.lAngle), angleRad2Deg(this.params.rAngle), -Math.PI/2);
+		
+		if (this.movementType == "balance") {
+			this.balance(angleRad2Deg(this.params.lAngle), angleRad2Deg(this.params.rAngle), this.params.path);
 		}
 	}
 }
@@ -132,7 +152,7 @@ Wobbler.prototype.rotate = function(lAngleDeg, rAngleDeg, accelerate) {
 	}	
 	this.rotateElement();
 }
-		
+
 Wobbler.prototype.resume = function() {
 	if (this.mouseDown) { 
 		$(document).off("mousemove.Wobbler" + this.id);
@@ -140,7 +160,28 @@ Wobbler.prototype.resume = function() {
 		this.mouseDown = false;
 	}
 	if (this.movementType == "balance") {
-		this.rotate(angleRad2Deg(this.angle), angleRad2Deg(this.params.lAngle), 2);
+		this.angle = normAngle(this.angle);
+		
+		// pick the further angle as a destination
+		var dAngleL = normAngle(this.params.lAngle-this.angle);
+		var dAngleR = normAngle(this.params.rAngle-this.angle);
+		if (Math.abs(dAngleL) < Math.abs(dAngleR)) {
+			var toAngle = this.params.rAngle;
+			var throughAngle = this.params.lAngle;
+			this.params.path = Math.PI/2;
+		} else {
+			var toAngle = this.params.lAngle;
+			var throughAngle = this.params.rAngle;
+			this.params.path = -Math.PI/2;
+		}
+		
+		// Make sure it passes the other angle on its way.
+		if (toAngle > throughAngle) {
+			this.angle = makeAngleSmaller(this.angle, throughAngle);
+		} else {
+			this.angle = makeAngleBigger(this.angle, throughAngle);
+		}		
+		this.rotate(angleRad2Deg(this.angle), angleRad2Deg(toAngle), 2);
 	}
 }
 
@@ -173,7 +214,7 @@ function Wobbler(element, id, frame) {
 	this.id = id;
 	this.angle = 0;
 	this.movementType = "";
-	this.params = { 'lAngle': null, 'rAngle': null, 'maxAngle': null };
+	this.params = { 'lAngle': null, 'rAngle': null, 'maxAngle': null, 'path': null };
 	this.frame = { 'count': 0, 'countSec': 0 };
 
 	this.mouseDown = false;

@@ -138,14 +138,13 @@ function setBrowserIndependentProperty(div, property, value) {
 </article>
 
 <script>
+	$(".rotating").each(function(i, element) { this.wobbler = new Wobbler(element, i, true); })
+	
     var divs = document.getElementsByClassName("rotating");
 	
-    for(var i = 0; i < divs.length; i++) {
-		divs[i].wobbler = new Wobbler(divs[i], i, true);
-    }
-		divs[0].wobbler.balance(0, 20);		//
-		divs[1].wobbler.balance(40, 20);		//
-		divs[2].wobbler.balance(-12, 12);		//
+	divs[0].wobbler.balance(-120, 120);		//
+//	divs[1].wobbler.balance(40, 20);		//
+//	divs[2].wobbler.balance(-12, 12);		//
 
 </script>
 
