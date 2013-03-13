@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simulating jQuery</title>
+	<style>
+.example-box {
+    border-radius: 7px;
+    box-shadow: 0px 10px 15px #866;
+    margin: 50px;
+    padding: 5px;
+    text-align: center;
+    width: 200px;
+    border: solid 1px #800;
+    background-color: #fcc;
+}
+
+.non-selectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.clickable,
+.clickable:active,
+.clickable:hover {
+    cursor: pointer;
+}
+
+.rotating {
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+}
+
+body {
+    font-family: 'Helvetica', sans-serif;
+    font-size: 12pt;
+    background-color: #eee;
+}
+
+article {
+    border-radius: 10px;
+    background-color: white;
+    width: 600px;
+    padding: 120px 10px;
+	position: relative;
+}
+
+.centered {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.vertically-spaced {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.frame-rate {
+	background-color: #eee;
+    border-radius: 7px;
+	bottom: 12px; 
+	color: #444444;
+	padding: 6px;
+	position: absolute; 
+	right: 12px;
+	text-align: center;
+	width: 120px;
+}
+
+iframe, .iframe-wrap {
+    width: 250px;
+    height: 145px;
+    border: none;
+    overflow: hidden;
+}
+
+pre {
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+}
+	</style>
+	<script>
+/* 
+ * Rotate the given HTML element by a randomly selected value.
+ * Returns that random value.
+ */
+function rotateRandom(div) {
+    var rotateDegree = Math.round(Math.random() * 90 - 45);
+    var rotateCSSProperty = "rotate(" + rotateDegree + "deg)";
+    setBrowserIndependentProperty(div, "transform", rotateCSSProperty);
+
+    return rotateDegree;
+}
+
+/*
+ * Replace number in a text with a new value.
+ */
+function replaceNumber(div, newNumber) {
+    // Replace the string of digits (and a minus) with a given value.
+    var re = new RegExp("([^0-9-]*)[-0-9.]+(.*)");
+    var resultsArray = re.exec(div.innerHTML);
+    div.innerHTML = resultsArray[1] + newNumber + resultsArray[2];
+}
+
+/*
+ * Set the CSS property in a way compatible with many browsers.
+ */
+function setBrowserIndependentProperty(div, property, value) {
+    div.style[property] = value;
+    div.style["-ms-" + property] = value;
+    div.style["-o-" + property] = value;
+    div.style["-moz-" + property] = value;
+    div.style["-webkit-" + property] = value;
+}
+	</script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="task-6-v6.js"></script>
+</head>
+
+<body>
+
+<article class="centered">
+    <div class="rotating non-selectable clickable example-box centered">
+      I am just a wobbling &lt;div&gt;. Everybody spins me!<br>
+	  I am pretty much a rectangular Santa.
+    </div>
+
+<!--    <div class="rotating non-selectable clickable example-box centered">
+      I am the cutest one here...
+    </div>
+
+    <div class="rotating non-selectable clickable example-box centered">
+      I am yet another one. Everybody spins me, too!
+    </div> -->
+	<div class="frame-rate"></div>
+</article>
+
+<script>
+	$(".rotating").each(function(i, element) { this.wobbler = new Wobbler(element, i, true); })
+	
+    var divs = document.getElementsByClassName("rotating");
+
+	divs[0].wobbler.balance(-20, 20);		//
+//	divs[1].wobbler.balance(40, 20);		//
+//	divs[2].wobbler.balance(-10, 70);		//
+
+</script>
+
+</body>
+</html>
