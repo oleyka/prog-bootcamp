@@ -83,7 +83,7 @@ Wobbler.prototype.balance = function(lAngleDeg, rAngleDeg) { //
 	this.timerId = setInterval(function() { self.rotateElement(); }, 16); 
 }
 
-Wobbler.prototype.release = function() {	
+Wobbler.prototype.release = function(event) {	
 	if (this.mouse.down) { 
 		$(document).off("mousemove.Wobbler" + this.id);
 		$(document).off("mouseup.Wobbler" + this.id);
@@ -122,7 +122,7 @@ Wobbler.prototype.release = function() {
 	this.timerId = setInterval(function() { self.rotateElement(); }, 16); 
 }
 
-Wobbler.prototype.followMouse = function() {
+Wobbler.prototype.followMouse = function(event) {
 	this.mouse.timePrev = this.mouse.time;
 	this.mouse.time = event.timeStamp;
 	
@@ -132,7 +132,7 @@ Wobbler.prototype.followMouse = function() {
 	this.display();
 }
 
-Wobbler.prototype.follow = function() {
+Wobbler.prototype.follow = function(event) {
 	this.mouse.down = true;
 	clearInterval(this.timerId);
 	
@@ -145,8 +145,8 @@ Wobbler.prototype.follow = function() {
 	this.mouse.timePrev = this.mouse.time;
 	
 	var self = this;
-	$(document).on("mousemove.Wobbler" + this.id, function() { self.followMouse(); });
-	$(document).on("mouseup.Wobbler" + this.id, function() { self.release(); });
+	$(document).on("mousemove.Wobbler" + this.id, function(ev) { self.followMouse(ev); });
+	$(document).on("mouseup.Wobbler" + this.id, function(ev) { self.release(ev); });
 }
 
 function Wobbler(element, id, frame) {
@@ -166,7 +166,7 @@ function Wobbler(element, id, frame) {
 	this.mouse = { angle: 0, anglePrev: 0, time: 0, timePrev: 0, shiftAngle: 0, down: false };
 	
 	var self = this;
-	$(this.element).on("mousedown.Wobbler" + this.id, function() { self.follow(); });
+	$(this.element).on("mousedown.Wobbler" + this.id, function(ev) { self.follow(ev); });
 
 	if (frame) {
 		this.frame = { 'count': 0, 'countSec': 0 };
