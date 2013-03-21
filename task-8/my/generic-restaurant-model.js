@@ -13,7 +13,7 @@ var GenericRestaurantModel = Backbone.Model.extend({
                 return "Number of visitors must not be negative";
             break;
         case "closed":
-            if(attributes.currentOccupancy == 0)
+            if(attributes.currentOccupancy != 0)
                 return "Number of visitors in a closed restaurant must be 0"; // this should be a valid state
             break;
         default:
@@ -23,10 +23,7 @@ var GenericRestaurantModel = Backbone.Model.extend({
 
     visitorCame: function() {
         if(this.get("state") == "open") {
-            console.log( "Adding a visitor: " + JSON.stringify(this.set(
-                        {currentOccupancy: this.get("currentOccupancy") + 1 },
-                        {validate: true}) ) );
-            return true;
+            return this.set({currentOccupancy: this.get("currentOccupancy") + 1 }, {validate: true});
         } else {
             console.log("Cannot add visitors to a closed restaurant!");
             return false;
