@@ -1,7 +1,7 @@
 // To-Do - открывание заново неоткрытого ресторана?
 
 var Visitor = Backbone.Model.extend({
-    defaults: { lastFoursquareCheckin: "", n: 0 },
+    defaults: { lastFoursquareCheckin: "", cid: 0 },
 
     checkin: function(venue) {
         this.set('lastFoursquareCheckin', venue);
@@ -13,9 +13,10 @@ var VisitorsList = Backbone.Collection.extend({ model: Visitor });
 
 var RestaurantModel = Backbone.Model.extend({
     defaults: {
-        state: "closed",
         currentOccupancy: 0,
-        todayCount: 0
+        name: "",
+        state: "closed",
+        todayCount: 0,
     },
     
     initialize: function() {
@@ -51,7 +52,7 @@ var RestaurantModel = Backbone.Model.extend({
             this.set({currentOccupancy: this.get('currentOccupancy') + 1 });
             this.set({todayCount: this.get('todayCount') + 1 });
 
-            newVisitor.set('n', this.get('todayCount'));
+            newVisitor.set('cid', this.get('todayCount'));
             newVisitor.checkin(this.get('restaurantName'));
 
             this.get('visitors').add(newVisitor);
@@ -99,3 +100,31 @@ var RestaurantModel = Backbone.Model.extend({
     }
 
 });
+
+var RestaurantView = Backbone.View.extend({
+  className: "rClass",
+
+  // Кэшируем шаблон, данный нам в известном script-блоке.
+  tmpl: _.template($("#restaurant-message").html()),
+
+  events: {
+    'click': "do_close"
+  },
+    
+  initialize: function() {
+    this.listenTo(this.model, 'change', this.render);
+    this.render();
+  },
+
+  // обновить this.el новым содержимым.
+  render: function() {
+//    console.log(this.$el);
+    this.$el.html(this.tmpl(this.model.attributes));
+    return this;    // Рекомендуется.
+  },
+
+  do_close: function() {
+    this.model.closeRestaurant();
+  }
+});
+
