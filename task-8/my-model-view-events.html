@@ -7,25 +7,19 @@
 <script src="js/json2.js"></script>
 <script src="js/backbone-1.0.0.js"></script>
 
+<script id="visitor-message" type="text/underscore-template">
+        <input type="button" value="<%- cid %>" id="<%- cid %>">
+</script>
+
 <script id="restaurant-message" type="text/underscore-template">
-<div class="rClass rClassClosed">
-    <div>
-      <h3><%- name %></h3>
-      <p>Status: <%- state %></p>
-      <p>Total visitors: <%- currentOccupancy %></p>
-      <form action="#">
-        <div>
-          <input type="button" value="Open" onClick="restView.model.restaurantOpen();">
-          <input type="button" value="Close" onClick="restView.model.restaurantClose();">
-        </div>
-          <br><br>
-          <input type="button" value="1" onClick="();">
-          <input type="button" value="2" onClick="();">
-          <input type="button" value="3" onClick="();">
-          <input type="button" value="4" onClick="();">
-          <input type="button" value="5" onClick="();">
-      </form></div>
-  </div>
+    <h3><%- name %></h3>
+    <p>Status: <%- state %></p>
+    <p>Total visitors: <%- currentOccupancy %></p>
+    <form action="#">
+        <input class="rOpen" type="button" value="Open">
+        <input class="rClose" type="button" value="Close">
+        <input class="rNewVisitor" type="button" value="Add Visitor">
+    </form>
 </script>
 
 <script src="my/my-restaurant-model.js"></script>
@@ -35,14 +29,14 @@
   border-radius: 5px;
   float: left;
   margin: 0; padding: 16px;
-  width: 240px; height: 240px;
+  width: 240px; height: 360px;
 }
 
 .rClassOpen { border-color: #77CC77; background-color: #CCFFCC; }
 .rClassClosing { border-color: #CC8866; background-color: #FFDDBB; }
 .rClassClosed { border-color: #999999; background-color: #DDDDDD; }
 
-.rClass input { float: left; padding: 4px 12px; margin: 4px; }
+.rVisitor { float: left; padding: 4px 8px; margin: 4px; }
 
 </style>
 </head>
@@ -56,8 +50,8 @@
       <p>Total visitors</p>
       <form action="#">
         <div>
-          <input type="button" value="Open" onClick="restaurantOpen();">
-          <input type="button" value="Close" onClick="restaurantClose();">
+          <input class="rOpen" type="button" value="Open">
+          <input class="rClose" type="button" value="Close">
         </div>
           <br><br>
           <input type="button" value="1" onClick="();">
@@ -69,13 +63,11 @@
   </div> -->
 
 <script>
-var restModel = new RestaurantModel({ name: "Ошибка сапёра" });
- var restView = new RestaurantView({ model: restModel });
+var restModel = new RestaurantModel({ name: "Ошибка сапёра", maxOccupancy: 12 });
+var restView = new RestaurantView({ model: restModel });
 
  $("body").append(restView.el);
 
- // console.log("el: " + JSON.stringify(restView.el) ); // div element
- console.log("$el: " + restView.$el.show() ); // object
 </script>
 
 </body>
