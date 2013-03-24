@@ -23,7 +23,6 @@ var VisitorView = Backbone.View.extend({
 
   render: function() {
     this.$el.html(this.tmpl(this.model.attributes));
-    $(".rClass").append(this.$el); // how about 2 restaurants on the same screen
     return this;
   }
 });
@@ -129,8 +128,16 @@ var RestaurantView = Backbone.View.extend({
 
   render: function() {
     this.$el.html(this.tmpl(this.model.attributes));
+    this.$el.removeClass("rClassopen rClassclosing rClassclosed");
+    this.$el.addClass("rClass" + this.model.get('state'));
+
     var visitors = this.model.get('visitors');
-    visitors.each(function(m) { m.view.render(); });
+    var self = this;
+
+    visitors.each(function(visModel) { 
+            var visRender = visModel.view.render(); 
+            self.$el.append(visRender.el);
+        });
     return this;
   },
 
