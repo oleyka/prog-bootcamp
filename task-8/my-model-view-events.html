@@ -28,7 +28,7 @@
   border: solid 1px;
   border-radius: 5px;
   float: left;
-  margin: 0; padding: 16px;
+  margin: 8px; padding: 16px;
   width: 240px; height: 360px;
 }
 
@@ -63,10 +63,14 @@
   </div> -->
 
 <script>
-var restModel = new RestaurantModel({ name: "Ошибка сапёра", maxOccupancy: 12 });
-var restView = new RestaurantView({ model: restModel });
+var restModel1 = new RestaurantModel({ name: "Chromatic", maxOccupancy: 12 });
+var restView1 = new RestaurantView({ model: restModel1 });
 
- $("body").append(restView.el);
+var restModel2 = new RestaurantModel({ name: "Bellano", maxOccupancy: 12 });
+var restView2 = new RestaurantView({ model: restModel2 });
+
+$("body").append(restView1.el);
+$("body").append(restView2.el);
 
 </script>
 
