@@ -121,8 +121,11 @@ var RestaurantView = Backbone.View.extend({
     'click .rVisitor input': 'remove_visitor',
 
     'click input[name="anon_name"]': 'check_new_visitor_anon',
+
     'keyup input[name="last_name"]': 'check_new_visitor_last',
-    'click input[name="last_name"].rDisabled': 'enable_new_visitor_last',
+    'blur input[name="last_name"]': 'check_new_visitor_last',
+
+    'focus input[name="last_name"].rDisabled': 'enable_new_visitor_last',
     'keydown input[name="last_name"].rDisabled': 'enable_new_visitor_last'
   },
     
