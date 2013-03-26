@@ -1,5 +1,5 @@
 var Visitor = Backbone.Model.extend({
-    defaults: { lastFoursquareCheckin: "" },
+    defaults: { lastFoursquareCheckin: "", lastName: "" },
 
     initialize: function() {
         this.set('cid', this.cid);
@@ -118,7 +118,12 @@ var RestaurantView = Backbone.View.extend({
     'click .rOpen': 'do_open',
     'click .rClose': 'do_close',
     'click .rNewVisitor': 'add_visitor',
-    'click .rVisitor input': 'remove_visitor'
+    'click .rVisitor input': 'remove_visitor',
+
+    'click input[name="anon_name"]': 'check_new_visitor_anon',
+    'keyup input[name="last_name"]': 'check_new_visitor_last',
+    'click input[name="last_name"].rDisabled': 'enable_new_visitor_last',
+    'keydown input[name="last_name"].rDisabled': 'enable_new_visitor_last'
   },
     
   initialize: function() {
@@ -149,8 +154,20 @@ var RestaurantView = Backbone.View.extend({
     this.model.closeRestaurant();
   },
 
-  add_visitor: function() {
-    var visitor = new Visitor;
+  add_visitor: function(el) {
+    var form = el.currentTarget.parentNode;
+
+    var lastNameEl = $(form).children('input[name="last_name"]');
+    var anonNameEl = $(form).children('input[name="anon_name"]');
+
+    var lastName = "";
+    if (anonNameEl[0].checked) {
+        lastName = '[anon]';
+    } else {
+        lastName = lastNameEl[0].value;
+    }
+    var visitor = new Visitor({ 'lastName' : lastName });
+
     var visView = new VisitorView({model: visitor});
     this.model.visitorCame(visitor);
   },
@@ -162,5 +179,39 @@ var RestaurantView = Backbone.View.extend({
         return true;
     }
     return false;
+  },
+
+  enable_new_visitor_last: function(el) {
+    $(el.currentTarget).removeClass("rDisabled");
+
+    var form = el.currentTarget.parentNode;
+    var anonNameEl = $(form).children('input[name="anon_name"]');
+    anonNameEl[0].checked = false;
+  },
+
+  check_new_visitor_last: function(el) {
+    // does not recognize erase keystrokes!
+    console.log("bling!");
+    var form = el.currentTarget.parentNode;
+    var anonNameEl = $(form).children('input[name="anon_name"]');
+
+    if (el.currentTarget.value == "") {
+        anonNameEl[0].checked = true;        
+        $(el.currentTarget).addClass("rDisabled");
+    } else {
+        anonNameEl[0].checked = false;
+    }
+  },
+
+  check_new_visitor_anon: function(el) {
+    var form = el.currentTarget.parentNode;
+    var lastNameEl = $(form).children('input[name="last_name"]');
+
+    if (el.currentTarget.checked) {
+        lastNameEl[0].value = '';
+        lastNameEl.addClass("rDisabled");
+    } else {
+        lastNameEl.removeClass("rDisabled");
+    }
   }
 });
