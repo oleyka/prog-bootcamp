@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+  <title>BB View task 8</title>
+<script src="js/underscore-1.4.4.js"></script>
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/json2.js"></script>
+<script src="js/backbone-1.0.0.js"></script>
+
+<script id="visitor-message" type="text/underscore-template">
+        <input type="button" value="<%- cid %>:<%- lastName %>" id="<%- cid %>">
+</script>
+
+<script id="restaurant-message" type="text/underscore-template">
+    <h3><%- name %></h3>
+    <p>Status: <%- state %></p>
+    <p>Total visitors: <%- currentOccupancy %></p>
+    <form action="#">
+        <input class="rOpen" type="button" value="Open">
+        <input class="rClose" type="button" value="Close">
+        <hr>
+        <p>New visitor:</p>
+        <p>Name <input class="rVisitorName" type="text" name="last_name"> 
+          or <input class="rVisitorName" type="checkbox" name="anon_name" checked> anonymous.
+          <input class="rNewVisitor rVisitorName" type="button" value="Add">
+        </p>
+    </form>
+</script>
+
+<script src="http://www.parsecdn.com/js/parse-1.2.2.min.js"></script>
+<script src="restaurant-model.js"></script>
+<style>
+.rClass {
+  border: solid 1px;
+  border-radius: 5px;
+  float: left;
+  margin: 8px; padding: 16px;
+  width: 480px;
+}
+
+.rClassopen { border-color: #77CC77; background-color: #CCFFCC; }
+.rClassclosing { border-color: #CC8866; background-color: #FFDDBB; }
+.rClassclosed { border-color: #999999; background-color: #DDDDDD; }
+
+.rVisitor { float: left; padding: 4px 8px; margin: 4px; }
+.rVisitorName { display: inline; }
+
+.rDisabled { color: #999999; background: #cccccc; }
+
+</style>
+</head>
+
+<body>
+
+<script>
+Parse.initialize("sUsP9yfDdLAMDqAsFurw6YrVvnhZ3OsbMbePLcQW", "a6XmSIjYprnsxzvF8dhR1AWY1pz6WFE5xf4Emm6N");
+
+var TestObject = Parse.Object.extend("TestObject");
+
+var testObject = new TestObject();
+testObject.save(
+    { foo: "bar" }, 
+    { success: function(object) { alert("yay! it worked"); } } );
+
+var restModel1 = new RestaurantModel({ name: "Coffee house", maxOccupancy: 12 });
+var restView1 = new RestaurantView({ model: restModel1 });
+
+var restModel2 = new RestaurantModel({ name: "House of tea", maxOccupancy: 12 });
+var restView2 = new RestaurantView({ model: restModel2 });
+
+$("body").append(restView1.el);
+$("body").append(restView2.el);
+
+</script>
+
+</body>
+</html>
