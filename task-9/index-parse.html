@@ -2,10 +2,13 @@
 <html>
 <head>
   <title>BB View task 8</title>
+
 <script src="js/underscore-1.4.4.js"></script>
 <script src="js/jquery-1.9.1.js"></script>
 <script src="js/json2.js"></script>
-<script src="js/backbone-1.0.0.js"></script>
+<!-- <script src="js/backbone-1.0.0.js"></script> -->
+
+<script src="http://www.parsecdn.com/js/parse-1.2.2.min.js"></script>
 
 <script id="visitor-message" type="text/underscore-template">
         <input type="button" value="<%- cid %>:<%- lastName %>" id="<%- cid %>">
@@ -27,8 +30,7 @@
     </form>
 </script>
 
-<script src="http://www.parsecdn.com/js/parse-1.2.2.min.js"></script>
-<script src="restaurant-model.js"></script>
+<script src="parse-restaurant-model.js"></script>
 <style>
 .rClass {
   border: solid 1px;
@@ -55,12 +57,12 @@
 <script>
 Parse.initialize("sUsP9yfDdLAMDqAsFurw6YrVvnhZ3OsbMbePLcQW", "a6XmSIjYprnsxzvF8dhR1AWY1pz6WFE5xf4Emm6N");
 
-var TestObject = Parse.Object.extend("TestObject");
+/* var TestObject = Parse.Object.extend("TestObject");
 
 var testObject = new TestObject();
 testObject.save(
     { foo: "bar" }, 
-    { success: function(object) { alert("yay! it worked"); } } );
+    { success: function(object) { alert("yay! it worked"); } } ); */
 
 var restModel1 = new RestaurantModel({ name: "Coffee house", maxOccupancy: 12 });
 var restView1 = new RestaurantView({ model: restModel1 });

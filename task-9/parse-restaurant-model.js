@@ -1,4 +1,5 @@
-var Visitor = Backbone.Model.extend({
+var Visitor = Parse.Object.extend({
+    className: 'Visitor',
     defaults: { lastFoursquareCheckin: "", lastName: "" },
 
     initialize: function() {
@@ -10,9 +11,9 @@ var Visitor = Backbone.Model.extend({
     }
 });
 
-var VisitorsList = Backbone.Collection.extend({ model: Visitor });
+var VisitorsList = Parse.Collection.extend({ model: Visitor });
 
-var VisitorView = Backbone.View.extend({
+var VisitorView = Parse.View.extend({
     className: "rVisitor",
 
     tmpl: _.template($("#visitor-message").html()),
@@ -28,7 +29,8 @@ var VisitorView = Backbone.View.extend({
 });
 
 /////////////////////////////////////////////////////////
-var RestaurantModel = Backbone.Model.extend({
+var RestaurantModel = Parse.Object.extend({
+    className: 'Restaurant',
     defaults: {
         currentOccupancy: 0,
         name: "",
@@ -37,8 +39,13 @@ var RestaurantModel = Backbone.Model.extend({
     },
     
     initialize: function() {
-        var visitors = new VisitorsList;
+        var visitors = new VisitorsList();
         this.set('visitors', visitors);
+
+        /* var q = new Parse.Query(Visitor);
+            q.equalTo("user", Parse.User.current());
+            visitors.q = q;
+            visitors.fetch(); */
     },
 
     validate: function(attributes) {
@@ -66,6 +73,9 @@ var RestaurantModel = Backbone.Model.extend({
             visitor.checkin(this.get('restaurantName'));
             this.get('visitors').add(visitor);
             this.set({currentOccupancy: this.get('currentOccupancy') + 1 });
+            this.save(null, 
+                {   success: function() { console.log("Current restaurant state saved"); }, 
+                    error: function() { console.log("Restaurant model change not saved"); } });
             return visitor;
         }
         return false;
@@ -73,13 +83,18 @@ var RestaurantModel = Backbone.Model.extend({
 
     visitorLeft: function(visitor) {
         var visitors = this.get('visitors');
-        if(visitors.get(visitor)) {
+
+        if(visitors.getByCid(visitor.cid)) {
             this.get('visitors').remove(visitor);
             this.set({currentOccupancy: this.get('currentOccupancy') - 1 });
 
             if(this.get('currentOccupancy') == 0 && this.get('state') == "closing") {
                 this.closeRestaurant();
             }
+            this.save(null, 
+                {   success: function() { console.log("Current restaurant state saved"); }, 
+                    error: function() { console.log("Restaurant model change not saved"); } });
+
             return this;
         }
         return false;
@@ -108,10 +123,9 @@ var RestaurantModel = Backbone.Model.extend({
     }
 });
 
-var RestaurantView = Backbone.View.extend({
+var RestaurantView = Parse.View.extend({
   className: "rClass",
 
-  // Кэшируем шаблон, данный нам в известном script-блоке.
   tmpl: _.template($("#restaurant-message").html()),
 
   events: {
@@ -130,7 +144,9 @@ var RestaurantView = Backbone.View.extend({
   },
     
   initialize: function() {
-    this.listenTo(this.model, 'change', this.render);
+    this.model.on('change', this.render, this);
+    // No "listenTo" in Parse SDK
+    // this.listenTo(this.model, 'change', this.render);
     this.render();
   },
 
@@ -176,11 +192,14 @@ var RestaurantView = Backbone.View.extend({
   },
 
   remove_visitor: function(el) {
-    var visitor = this.model.get('visitors').get(el.currentTarget.id);
+    // Parse SDK couldn't process this.model.get('visitors').get(el.currentTarget.id)
+    var visitor = this.model.get('visitors').getByCid(el.currentTarget.id);
     if(visitor) {
         this.model.visitorLeft(visitor);
+        console.log('Visitor removal success');
         return true;
     }
+    console.log('Visitor removal problem');
     return false;
   },
 
