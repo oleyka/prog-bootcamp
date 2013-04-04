@@ -44,7 +44,7 @@ var Visitor = Backbone.Model.extend({
             ajaxParams.url += '/' + this.get('objectId');
             break;
         }
-        console.log('Running ' + ajaxParams.type + ": " + ajaxParams.data);
+        console.log('Running visitor ' + ajaxParams.type + ": " + ajaxParams.data);
         $.ajax(ajaxParams);
     },
 
@@ -57,8 +57,8 @@ var Visitor = Backbone.Model.extend({
         switch (method) {
         case 'create':
             this.set('objectId', data.objectId); 
-
             var rest = this.get('restaurant');
+            // this.get('restaurant').sync('update');
             var ajaxParams = {
                 'url': baseUrl + rest.get('className') + '/' + rest.get('objectId'),
                 'contentType': 'application/json',
@@ -66,12 +66,12 @@ var Visitor = Backbone.Model.extend({
                 'headers': { 'X-Parse-Application-Id': "sUsP9yfDdLAMDqAsFurw6YrVvnhZ3OsbMbePLcQW", 
                              'X-Parse-REST-API-Key': "IXhN9vJahmqqQoqRxmm9aNIVHNiJSU90ypSlko9G" },
                 'type': "PUT", 
-                data: JSON.stringify({'__op': "AddUnique", 'visitors': [ rest.get('objectId') ] }),
+                data: JSON.stringify({ 'visitorsIdArray': {'__op': "AddUnique", 'objects': [ this.get('objectId') ] }}),
                 success: function(data, status, jqXHR) { },
                 error: function(jqXHR, errStr, errThrown) { self.failSync(errStr + ": " + errThrown); },
                 complete: function(jqXHR, status) {}
             };
-            console.log('Running ' + ajaxParams.type + ": " + ajaxParams.data);
+            console.log('Running post visitor create ' + ajaxParams.type + ": " + ajaxParams.data);
             $.ajax(ajaxParams);
             break; 
         case 'read':
@@ -88,12 +88,12 @@ var Visitor = Backbone.Model.extend({
                 'headers': { 'X-Parse-Application-Id': "sUsP9yfDdLAMDqAsFurw6YrVvnhZ3OsbMbePLcQW", 
                              'X-Parse-REST-API-Key': "IXhN9vJahmqqQoqRxmm9aNIVHNiJSU90ypSlko9G" },
                 'type': "PUT", 
-                data: JSON.stringify({'__op': "Remove", 'visitors': [ rest.get('objectId') ] }),
+                data: JSON.stringify({ 'visitorsIdArray': {'__op': "Remove", 'objects': [ this.get('objectId') ] }}),
                 success: function(data, status, jqXHR) { },
                 error: function(jqXHR, errStr, errThrown) { self.failSync(errStr + ": " + errThrown); },
                 complete: function(jqXHR, status) {}
             };
-            console.log('Running ' + ajaxParams.type + ": " + ajaxParams.data);
+            console.log('Running post visitor delete ' + ajaxParams.type + ": " + ajaxParams.data);
             $.ajax(ajaxParams);
             break;
         default: break;
@@ -104,6 +104,16 @@ var Visitor = Backbone.Model.extend({
 
 var VisitorsList = Backbone.Collection.extend({ 
     model: Visitor,
+
+    getVisitorsIdArray: function() {
+        var visitorsIdArray = [];
+
+        for(var i = 0; i < this.length; i++) {
+            visitorsIdArray[i] = this.get('objectId');
+        }
+        return visitorsIdArray;
+    },
+
     getByObjectId: function(objectId) {
         this.each(function(v){ 
             if (v.get('objectId') === objectId) { return v; }
@@ -165,8 +175,9 @@ var RestaurantModel = Backbone.Model.extend({
     },
 
     sync: function(method, visitor) { 
+        this.set('visitorsIdArray', this.get('visitors').getVisitorsIdArray());
         var self = this;
-        var selectAttr = [ 'currentOccupancy', 'name', 'state', 'maxOccupancy' ];
+        var selectAttr = [ 'currentOccupancy', 'name', 'state', 'maxOccupancy', 'visitorsIdArray' ];
         var baseUrl = "https://api.parse.com/1/classes/";
         var ajaxParams = {
             'url': baseUrl + this.get('className'),
@@ -203,7 +214,7 @@ var RestaurantModel = Backbone.Model.extend({
             ajaxParams.url += '/' + this.get('objectId');
             break;
         }
-        console.log('Running ' + ajaxParams.type + ": " + ajaxParams.data);
+        console.log('Running restaurant ' + ajaxParams.type + ": " + ajaxParams.data);
         $.ajax(ajaxParams);
     },
 
