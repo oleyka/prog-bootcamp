@@ -28,6 +28,7 @@
 </script>
 
 <script src="http://www.parsecdn.com/js/parse-1.2.2.min.js"></script>
+
 <script src="bb-restaurant-model.js"></script>
 <style>
 .rClass {
@@ -51,18 +52,11 @@
 </head>
 
 <body>
-
 <script>
-Parse.initialize("sUsP9yfDdLAMDqAsFurw6YrVvnhZ3OsbMbePLcQW", "a6XmSIjYprnsxzvF8dhR1AWY1pz6WFE5xf4Emm6N");
+var vasya = new Visitor({'objectId': "t1LkgkTLI2"});
+var petya = new Visitor({'lastName': "Vasechkine"});
 
-var TestObject = Parse.Object.extend("TestObject");
-
-var testObject = new TestObject();
-testObject.save(
-    { foo: "bar" }, 
-    { success: function(object) { alert("yay! it worked"); } } );
-
-var restModel1 = new RestaurantModel({ name: "Coffee house", maxOccupancy: 12 });
+var restModel1 = new RestaurantModel({ name: "Coffee house", maxOccupancy: 12, visitors: [ vasya, petya ] });
 var restView1 = new RestaurantView({ model: restModel1 });
 
 var restModel2 = new RestaurantModel({ name: "House of tea", maxOccupancy: 12 });
@@ -70,6 +64,9 @@ var restView2 = new RestaurantView({ model: restModel2 });
 
 $("body").append(restView1.el);
 $("body").append(restView2.el);
+
+restModel1.sync('create');
+restModel2.sync('create');
 
 </script>
 
