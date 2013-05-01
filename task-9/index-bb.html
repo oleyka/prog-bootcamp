@@ -53,21 +53,7 @@
 
 <body>
 <script>
-var vasya = new Visitor({'objectId': "t1LkgkTLI2"});
-var petya = new Visitor({'lastName': "Vasechkine"});
-
-var restModel1 = new RestaurantModel({ name: "Coffee house", maxOccupancy: 12, visitors: [ vasya, petya ] });
-var restView1 = new RestaurantView({ model: restModel1 });
-
-var restModel2 = new RestaurantModel({ name: "House of tea", maxOccupancy: 12 });
-var restView2 = new RestaurantView({ model: restModel2 });
-
-$("body").append(restView1.el);
-$("body").append(restView2.el);
-
-restModel1.sync('create');
-restModel2.sync('create');
-
+var rr = new RestaurantNetwork();
 </script>
 
 </body>
