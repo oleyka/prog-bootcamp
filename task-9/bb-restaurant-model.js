@@ -407,7 +407,6 @@ var RestaurantNetwork = Backbone.Model.extend({
         });
 
         this.view = new RestaurantNetworkView({ model: this });
-        $("body").append(this.view.el);
     },
     failRead: function(str) { console.log(str); }
 });
@@ -416,15 +415,11 @@ var RestaurantNetworkView = Backbone.View.extend({
     className: "rNClass",
 
     initialize: function() {
-        this.render();
-    },
-
-    render: function() {
         var self = this;
-        var restaurants = this.model.get('restaurants');
-        restaurants.each(function(rest) {
-            self.$el.append(rest.view.render().el);
+        this.model.get('restaurants').each(function(r) {
+            self.$el.append(r.view.render().el);
         });
+        $("body").append(this.el);
         return this;
     }
 });
