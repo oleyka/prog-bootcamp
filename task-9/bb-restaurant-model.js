@@ -128,7 +128,6 @@ var RestaurantModel = Backbone.Model.extend({
             if(attributes.currentOccupancy <= 0)
                 return "Number of visitors can only be positive with this state";
             break;
-
         case "closed":
             if(attributes.currentOccupancy != 0)
                 return "Number of visitors in a closed restaurant must be 0";
@@ -188,11 +187,6 @@ var RestaurantModel = Backbone.Model.extend({
                 } else { v.sync('update'); }
             });
             break;
-        case 'update': break;
-        case 'delete': 
-        // this doesn't delete existing visitors from Parse!
-        // it's not being called either ;)
-            break;
         case 'read': 
             this.set('currentOccupancy', data.currentOccupancy);
             this.set('maxOccupancy', data.maxOccupancy);
@@ -202,6 +196,9 @@ var RestaurantModel = Backbone.Model.extend({
                 var visitor = new Visitor({ 'objectId': data.visitors[j] });
                 visitor.sync('read');
             }
+        case 'update':
+        case 'delete': // this doesn't delete existing visitors from Parse!
+            break;
         default: break;
         }        
     },
@@ -364,16 +361,10 @@ var RestaurantView = Backbone.View.extend({
 });
 
 //////////////// Restaurant Network ///////////////
-var RestaurantsList = Backbone.Collection.extend({ model: RestaurantModel });
+var RestaurantNetwork = Backbone.Collection.extend({
+    model: RestaurantModel,
 
-var RestaurantNetwork = Backbone.Model.extend({
-    defaults: {
-        className: 'Network',
-    },
-    
     initialize: function() {
-        var restaurants = new RestaurantsList;
-        this.set('restaurants', restaurants);
         this.read();
     },
     read: function() {
@@ -399,13 +390,11 @@ var RestaurantNetwork = Backbone.Model.extend({
             $.each(r.visitorsArray, function(j, v) {
                 var visitor = new Visitor({ 'objectId': v });
                 visitor.view = new VisitorView({ model: visitor });
-
                 visitor.sync('read');
                 rest.get('visitors').add(visitor);
             });
-            self.get('restaurants').add(rest);
+            self.add(rest);
         });
-
         this.view = new RestaurantNetworkView({ model: this });
     },
     failRead: function(str) { console.log(str); }
@@ -416,11 +405,10 @@ var RestaurantNetworkView = Backbone.View.extend({
 
     initialize: function() {
         var self = this;
-        this.model.get('restaurants').each(function(r) {
+        this.model.each(function(r) {
             self.$el.append(r.view.render().el);
         });
         $("body").append(this.el);
         return this;
     }
 });
-
