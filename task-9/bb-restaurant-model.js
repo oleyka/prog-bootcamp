@@ -278,12 +278,10 @@ RestaurantNetwork.prototype.readNetwork = function(restNet) {
         $.each(data.results, function(i, r) {
             var rest = new RestaurantModel(r);
             rest.on('change', function() { self.syncRestaurant(rest) });
-//            self.listenTo(rest, 'change:attributes.syncStatus', self.syncRestaurant(rest));
 
             $.each(r.visitorsArray, function(j, v) {
                 var visitor = new Visitor({ 'objectId': v });
                 visitor.on('change:syncStatus', function() { self.syncVisitor(visitor) });
-//                self.listenTo(visitor, 'change:attributes.syncStatus', self.syncVisitor(visitor));
 
                 visitor.view = new VisitorView({ model: visitor });
                 visitor.set('syncStatus', 'read');
@@ -301,7 +299,7 @@ RestaurantNetwork.prototype.syncRestaurant = function(rest) {
     console.log('Restaurant sync: ' + rest.get('syncStatus'));
 
     var self = this;
-    // большая "сопля": при доюавлении посетителя в ресторан срабатывает 'change' ресторана 
+    // большая "сопля": при добавлении посетителя в ресторан срабатывает 'change' ресторана 
     // c syncStatus = "ok". При проверке выясняется, что есть посетитель, которому не выдан objectId.
     // Посетителю выдаётся objectId и навешивается слежение за syncStatus.
     if (rest.get('syncStatus') == "ok") { 
