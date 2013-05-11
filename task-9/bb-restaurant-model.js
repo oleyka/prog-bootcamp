@@ -36,7 +36,6 @@ var VisitorView = Backbone.View.extend({
   },
 
   render: function() {
-//    console.log(this.model.attributes);
     this.$el.html(this.tmpl(this.model.attributes));
     return this;
   }
