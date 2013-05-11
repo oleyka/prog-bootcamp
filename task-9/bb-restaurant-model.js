@@ -6,83 +6,23 @@ function setHeaders(jqXHR) {
 }
 
 var Visitor = Backbone.Model.extend({
-    defaults: { className: "Visitor", lastName: "", objectId: "" },
+    defaults: { 
+        className: "Visitor", 
+        lastName: "", 
+        objectId: "",
+        syncStatus: "ok"
+     },
 
     initialize: function() {
         this.set('cid', this.cid);
-    },
-
-    sync: function(method) { 
-        var self = this;
-        var selectAttr = [ 'lastName' ];
-        var baseUrl = "https://api.parse.com/1/classes/";
-
-        var ajaxParams = {
-            beforeSend: setHeaders,
-            'dataType': 'json',
-            'url': baseUrl + this.get('className'),
-            success: function(data, status, jqXHR) { self.completeSync(data, method); },
-            error: function(jqXHR, errStr, errThrown) { self.failSync(errStr + ": " + errThrown); },
-            complete: function(jqXHR, status) {}
-        };
-
-        switch (method) {
-        case 'create':
-            ajaxParams.type = 'POST';
-            ajaxParams.data = JSON.stringify(this.attributes, selectAttr);
-            break;
-
-        case 'update':
-            ajaxParams.type = 'PUT';
-            ajaxParams.data = JSON.stringify(this.attributes, selectAttr);
-            ajaxParams.url += '/' + this.get('objectId');
-            break;
-
-        case 'delete':
-            ajaxParams.type = 'DELETE';
-            ajaxParams.url += '/' + this.get('objectId');
-            break;
-
-        case 'read':
-            ajaxParams.type = 'GET';
-            ajaxParams.url += '/' + this.get('objectId');
-            break;
-        }
-        $.ajax(ajaxParams);
-    },
-
-    completeSync: function(data, method) { 
-        var baseUrl = "https://api.parse.com/1/classes/";
-        var self = this;
-
-        switch (method) {
-        case 'create':
-            this.set('objectId', data.objectId);
-            this.get('restaurant').sync('update');
-            break; 
-        case 'read':
-            this.set('lastName', data.lastName);
-            break;
-        case 'delete': 
-            this.get('restaurant').sync('update');
-            break; 
-        case 'update':
-        default: break;
-        }
-    },
-    failSync: function(str) { console.log(str); }
+    }
 });
 
 var VisitorsList = Backbone.Collection.extend({ 
     model: Visitor,
     getVisitorsIdArray: function() { return this.pluck('objectId'); },
-
-    getByObjectId: function(objectId) {
-        this.each(function(v){ 
-            if (v.get('objectId') === objectId) { return v; }
-        });
-        return false;
-    }
+    getByObjectId: function(objId) { return this.findWhere({objectId: objId}); },
+    getUnidentVisitor: function() { return this.findWhere({objectId: ""}); },
 });
 
 var VisitorView = Backbone.View.extend({
@@ -96,6 +36,7 @@ var VisitorView = Backbone.View.extend({
   },
 
   render: function() {
+//    console.log(this.model.attributes);
     this.$el.html(this.tmpl(this.model.attributes));
     return this;
   }
@@ -109,8 +50,8 @@ var RestaurantModel = Backbone.Model.extend({
         name: "",
         state: "closed",
         maxOccupancy: 0,
-        objectId: ""
-//        syncInProgress: 0
+        objectId: "",
+        syncStatus: "ok"
     },
     
     initialize: function() {
@@ -137,79 +78,12 @@ var RestaurantModel = Backbone.Model.extend({
         }
     },
 
-    sync: function(method, visitor) { 
-        this.set('visitorsArray', this.get('visitors').getVisitorsIdArray());
-        var self = this;
-        var selectAttr = [ 'name', 'maxOccupancy', 'state', 'currentOccupancy', 'visitorsArray' ];
-        var baseUrl = "https://api.parse.com/1/classes/";
-        var ajaxParams = {
-            beforeSend: setHeaders,
-            'dataType': 'json',
-            'url': baseUrl + this.get('className'),
-            success: function(data, status, jqXHR) { self.completeSync(data, method, visitor); },
-            error: function(jqXHR, errStr, errThrown) { self.failSync(errStr + ": " + errThrown); },
-            complete: function(jqXHR, status) {}
-        };
-
-        switch (method) {
-        case 'create':
-            ajaxParams.type = 'POST';
-            ajaxParams.data = JSON.stringify(this.attributes, selectAttr);
-            break;
-
-        case 'update':
-            ajaxParams.type = 'PUT';
-            ajaxParams.data = JSON.stringify(this.attributes, selectAttr);
-            ajaxParams.url += '/' + this.get('objectId');
-            break;
-
-        case 'delete':
-            ajaxParams.type = 'DELETE';
-            ajaxParams.url += '/' + this.get('objectId');
-            break;
-
-        case 'read':
-            ajaxParams.type = 'GET';
-            ajaxParams.url += '/' + this.get('objectId');
-            break;
-        }
-        $.ajax(ajaxParams);
-    },
-
-    completeSync: function(data, method, visitor) { 
-        switch (method) {
-        case 'create': 
-            this.set('objectId', data.objectId); 
-            var visitors = this.get('visitors');
-            visitors.each(function(v) {
-                if (v.get('objectId') === "") { 
-                    v.sync('create'); 
-                } else { v.sync('update'); }
-            });
-            break;
-        case 'read': 
-            this.set('currentOccupancy', data.currentOccupancy);
-            this.set('maxOccupancy', data.maxOccupancy);
-            this.set('name', data.name);
-            this.set('state', data.state);
-            for (var j = 0; j < this.get('currentOccupancy'); j++) {
-                var visitor = new Visitor({ 'objectId': data.visitors[j] });
-                visitor.sync('read');
-            }
-        case 'update':
-        case 'delete': // this doesn't delete existing visitors from Parse!
-            break;
-        default: break;
-        }        
-    },
-    failSync: function(str) { console.log(str); },
-
     visitorCame: function(visitor) {
         if(this.get('state') == "open" && !this.get('visitors').get(visitor)) {
             this.get('visitors').add(visitor);
             visitor.set('restaurant', this);
             this.set({currentOccupancy: this.get('currentOccupancy') + 1 });
-            visitor.sync('create');
+            visitor.set('syncStatus', 'create');
             return this;
         }
         return false;
@@ -224,7 +98,7 @@ var RestaurantModel = Backbone.Model.extend({
             if(this.get('currentOccupancy') == 0 && this.get('state') == "closing") {
                 this.closeRestaurant();
             }
-            visitor.sync('delete');
+            visitor.set('syncStatus', 'delete');
             return this;
         }
         return false;
@@ -234,7 +108,7 @@ var RestaurantModel = Backbone.Model.extend({
         var visitors = this.get('visitors');
         if(this.get('state') == "closed") {
             this.set({'state': "open", 'currentOccupancy': 0}, {validate: true});
-            this.sync('update');
+            this.set('syncStatus', 'update');
             return this;
         }
         console.log("Cannot open unclosed restaurant");
@@ -248,7 +122,7 @@ var RestaurantModel = Backbone.Model.extend({
             } else {
                 this.set({'state': "closing"}, {validate: true});
             }
-            this.sync('update');
+            this.set('syncStatus', 'update');
             return this;
         }
         return false;
@@ -361,46 +235,12 @@ var RestaurantView = Backbone.View.extend({
 });
 
 //////////////// Restaurant Network ///////////////
-var RestaurantNetwork = Backbone.Collection.extend({
+var RestaurantCollection = Backbone.Collection.extend({
     model: RestaurantModel,
-
-    initialize: function() {
-        this.read();
-    },
-    read: function() {
-        var self = this;
-        var baseUrl = "https://api.parse.com/1/classes/Restaurant";
-        var ajaxParams = {
-            beforeSend: setHeaders,
-            'dataType': 'json',
-            'url': baseUrl,
-            'type': 'GET',
-            success: function(data, status, jqXHR) { self.completeRead(data); },
-            error: function(jqXHR, errStr, errThrown) { self.failRead(errStr + ": " + errThrown); },
-            complete: function(jqXHR, status) {}
-        };
-        $.ajax(ajaxParams);
-    },
-    completeRead: function(data) {
-        var self = this;
-        $.each(data.results, function(i, r) {
-            var rest = new RestaurantModel(r);
-            rest.view = new RestaurantView({ model: rest });
-
-            $.each(r.visitorsArray, function(j, v) {
-                var visitor = new Visitor({ 'objectId': v });
-                visitor.view = new VisitorView({ model: visitor });
-                visitor.sync('read');
-                rest.get('visitors').add(visitor);
-            });
-            self.add(rest);
-        });
-        this.view = new RestaurantNetworkView({ model: this });
-    },
-    failRead: function(str) { console.log(str); }
+    initialize: function() {}
 });
 
-var RestaurantNetworkView = Backbone.View.extend({
+var RestaurantCollectionView = Backbone.View.extend({
     className: "rNClass",
 
     initialize: function() {
@@ -412,3 +252,201 @@ var RestaurantNetworkView = Backbone.View.extend({
         return this;
     }
 });
+
+//////////////// Persister Structure ///////////////
+function RestaurantNetwork() {
+    var rn = new RestaurantCollection();
+    this.readNetwork(rn);
+    return rn;
+}
+
+RestaurantNetwork.prototype.readNetwork = function(restNet) {
+    var self = this;
+    var baseUrl = "https://api.parse.com/1/classes/Restaurant";
+    var ajaxParams = {
+        beforeSend: setHeaders,
+        'dataType': 'json',
+        'url': baseUrl,
+        'type': 'GET',
+        success: function(data, status, jqXHR) { self.completeRead(restNet, data); },
+        error: function(jqXHR, errStr, errThrown) { self.failRead(errStr + ": " + errThrown); },
+        complete: function(jqXHR, status) {}
+    };
+    $.ajax(ajaxParams);
+
+    this.completeRead = function(restNet, data) {
+        var self = this;
+        $.each(data.results, function(i, r) {
+            var rest = new RestaurantModel(r);
+            rest.on('change', function() { self.syncRestaurant(rest) });
+//            self.listenTo(rest, 'change:attributes.syncStatus', self.syncRestaurant(rest));
+
+            $.each(r.visitorsArray, function(j, v) {
+                var visitor = new Visitor({ 'objectId': v });
+                visitor.on('change:syncStatus', function() { self.syncVisitor(visitor) });
+//                self.listenTo(visitor, 'change:attributes.syncStatus', self.syncVisitor(visitor));
+
+                visitor.view = new VisitorView({ model: visitor });
+                visitor.set('syncStatus', 'read');
+                rest.get('visitors').add(visitor);
+            });
+            rest.view = new RestaurantView({ model: rest });
+            restNet.add(rest);
+        });
+        restNet.view = new RestaurantCollectionView({ model: restNet });
+    };
+    this.failRead = function(str) { console.log(str); };
+};
+
+RestaurantNetwork.prototype.syncRestaurant = function(rest) {
+    console.log('Restaurant sync: ' + rest.get('syncStatus'));
+
+    var self = this;
+    // большая "сопля": при доюавлении посетителя в ресторан срабатывает 'change' ресторана 
+    // c syncStatus = "ok". При проверке выясняется, что есть посетитель, которому не выдан objectId.
+    // Посетителю выдаётся objectId и навешивается слежение за syncStatus.
+    if (rest.get('syncStatus') == "ok") { 
+        var visitor = rest.get('visitors').getUnidentVisitor();
+        if (visitor) { 
+            self.syncVisitor(visitor); 
+            visitor.on('change:syncStatus', function() { self.syncVisitor(visitor) });
+        }
+        return;
+    }
+
+    rest.set('visitorsArray', rest.get('visitors').getVisitorsIdArray());
+    var selectAttr = [ 'name', 'maxOccupancy', 'state', 'currentOccupancy', 'visitorsArray' ];
+    var baseUrl = "https://api.parse.com/1/classes/";
+    var ajaxParams = {
+        beforeSend: setHeaders,
+        'dataType': 'json',
+        'url': baseUrl + rest.get('className'),
+        success: function(data, status, jqXHR) { self.completeSync(rest, data); },
+        error: function(jqXHR, errStr, errThrown) { self.failSync(errStr + ": " + errThrown); },
+        complete: function(jqXHR, status) {}
+    };
+
+    switch (rest.get('syncStatus')) {
+    case 'create':
+        ajaxParams.type = 'POST';
+        ajaxParams.data = JSON.stringify(rest.attributes, selectAttr);
+        break;
+
+    case 'update':
+        ajaxParams.type = 'PUT';
+        ajaxParams.data = JSON.stringify(rest.attributes, selectAttr);
+        ajaxParams.url += '/' + rest.get('objectId');
+        break;
+
+    case 'delete':
+        ajaxParams.type = 'DELETE';
+        ajaxParams.url += '/' + rest.get('objectId');
+        break;
+
+    case 'read':
+        ajaxParams.type = 'GET';
+        ajaxParams.url += '/' + rest.get('objectId');
+        break;
+    }
+    $.ajax(ajaxParams);
+
+    this.completeSync = function(rest, data) { 
+        console.log("Restaurant " + rest.get('syncStatus') + ": "+ rest.get('objectId') + 
+                " ::: " + JSON.stringify(data));
+
+        var method = rest.get('syncStatus');
+        rest.set('syncStatus', 'ok');
+
+        switch (method) {
+        case 'create': 
+            rest.set('objectId', data.objectId); 
+            var visitors = rest.get('visitors');
+            visitors.each(function(v) {
+                if (v.get('objectId') === "") { 
+                    v.set('syncStatus', 'create'); 
+                } else { v.set('syncStatus', 'update'); }
+            });
+            break;
+        case 'read': 
+            rest.set('currentOccupancy', data.currentOccupancy);
+            rest.set('maxOccupancy', data.maxOccupancy);
+            rest.set('name', data.name);
+            rest.set('state', data.state);
+            for (var j = 0; j < rest.get('currentOccupancy'); j++) {
+                var visitor = new Visitor({ 'objectId': data.visitors[j] });
+                visitor.set('syncStatus', 'read');
+            }
+        case 'update':
+        case 'delete':
+            break;
+        default: break;
+        }        
+    };
+    this.failSync = function(str) { console.log(str); };
+};
+
+RestaurantNetwork.prototype.syncVisitor = function(visitor) {
+    console.log('Visitor sync: ' + visitor.get('syncStatus'));
+    if (visitor.get('syncStatus') == "ok") { return; }
+
+    var self = this;
+    var selectAttr = [ 'lastName' ];
+    var baseUrl = "https://api.parse.com/1/classes/";
+    var ajaxParams = {
+        beforeSend: setHeaders,
+        'dataType': 'json',
+        'url': baseUrl + visitor.get('className'),
+        success: function(data, status, jqXHR) { self.completeSync(visitor, data); },
+        error: function(jqXHR, errStr, errThrown) { self.failSync(errStr + ": " + errThrown); },
+        complete: function(jqXHR, status) {}
+    };
+
+    switch (visitor.get('syncStatus')) {
+    case 'create':
+        ajaxParams.type = 'POST';
+        ajaxParams.data = JSON.stringify(visitor.attributes, selectAttr);
+        break;
+
+    case 'update':
+        ajaxParams.type = 'PUT';
+        ajaxParams.data = JSON.stringify(visitor.attributes, selectAttr);
+        ajaxParams.url += '/' + visitor.get('objectId');
+        break;
+
+    case 'delete':
+        ajaxParams.type = 'DELETE';
+        ajaxParams.url += '/' + visitor.get('objectId');
+        break;
+
+    case 'read':
+        ajaxParams.type = 'GET';
+        ajaxParams.url += '/' + visitor.get('objectId');
+        break;
+    }
+    $.ajax(ajaxParams);
+
+    this.completeSync = function(visitor, data) { 
+        console.log("Visitor " + visitor.get('syncStatus') + ": "+ visitor.get('objectId') +
+            " ::: " + JSON.stringify(data));
+
+        var method = visitor.get('syncStatus');
+        visitor.set('syncStatus', 'ok');
+
+        switch (method) {
+        case 'create':
+            visitor.set('objectId', data.objectId);
+            visitor.get('restaurant').set('syncStatus', 'update');
+            break; 
+        case 'read':
+            visitor.set('lastName', data.lastName);
+            break;
+        case 'delete': 
+            visitor.get('restaurant').set('syncStatus', 'update');
+            break; 
+        case 'update':
+        default: break;
+        }
+    };
+
+    this.failSync = function(str) { console.log(str); };
+};
