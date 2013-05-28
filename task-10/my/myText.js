@@ -9,9 +9,6 @@ define(
 
     function text() {
 
-      function doThisThing() { console.log('this text'); }
-      function doThatThing() { console.log('that text'); }
-
       function showText(txt) {
         this.$node.text(txt); 
       }
@@ -29,6 +26,5 @@ define(
         this.on('update', updateTime);
       });
     }
-
   }
 );
