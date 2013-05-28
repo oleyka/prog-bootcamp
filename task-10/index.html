@@ -1,8 +1,19 @@
 <!doctype html>
-<head><title></title></head>
-<body>
+<head><title></title>
+</head>
 	<script src="components/jquery/jquery.js"></script>
 	<script src="components/es5-shim/es5-shim.js"></script>
 	<script src="components/es5-shim/es5-sham.js"></script>
+
+<script type="text/javascript">
+    var require = {
+		urlArgs: (window.location.protocol == 'file:') ? 'bust=' + new Date().getTime() : ''
+    };
+    console.log(require.urlArgs);
+</script>
+
 	<script data-main="main.js" src="components/requirejs/require.js"></script>
+<body>
+	<textarea rows="1" cols="42" id="myText"></textarea>
+	<input type="button" id="myButton" value="Time">
 </body>

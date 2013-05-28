@@ -1,9 +1,19 @@
 define(
   [
-    'components/flight/lib/component'
+    'my/myButton',
+    'my/myText'
   ],
 
-  function(defineComponent) {
-        console.log("Dummy flight component is being loaded");
+  function(button, text) {
+    button.attachTo('#myButton', {
+      'nextPageSelector': '#nextPage',
+      'previousPageSelector': '#previousPage'
+    });
+
+    text.attachTo('#myText', {
+      'nextPageSelector': '#nextPage2',
+      'previousPageSelector': '#previousPage2'
+    });
+
   }
 );
