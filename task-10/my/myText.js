@@ -7,24 +7,27 @@ define(
 
     return def(text);
 
-    function text() {
-
-      function showText(txt) {
-        this.$node.text(txt); 
-      }
-
-      function updateTime() { 
-          var now = new Date();
-          this.attr.text = now.getHours() + ":" + now.getMinutes() + ':' + now.getSeconds();
-          this.$node.text(this.attr.text);
-      }
-
+    function text() {      
       this.defaultAttrs({ text: "Click that button for time ->" });
 
-      this.after('initialize', function() {
+      this.showText = function() {
+        console.log("c");
         this.$node.text(this.attr.text);
-        this.on('update', updateTime);
+      }
+
+      this.updateTime = function() { 
+        console.log("b");
+        var now = new Date();
+        this.attr.text = now.getHours() + ":" + now.getMinutes() + ':' + now.getSeconds();
+        this.showText();
+      }
+
+      this.after('initialize', function() {
+        console.log("a");
+        this.showText();
+        this.on('update', this.updateTime);
       });
+      console.log('000');
     }
   }
 );
