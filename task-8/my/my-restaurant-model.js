@@ -193,8 +193,6 @@ var RestaurantView = Backbone.View.extend({
   },
 
   check_new_visitor_last: function(el) {
-    // does not recognize erase keystrokes!
-    console.log("bling!");
     var form = el.currentTarget.parentNode;
     var anonNameEl = $(form).children('input[name="anon_name"]');
 

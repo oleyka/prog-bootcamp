@@ -259,6 +259,25 @@ function RestaurantNetwork() {
     return rn;
 }
 
+RestaurantNetwork.prototype.persistRestaurant(rest) {
+    var self = this;
+    var init = rest.initialize;
+    rest.initialize = function() {
+        init();
+        rest.on('change', function() { self.syncRestaurant(rest) });
+    }
+}
+
+RestaurantNetwork.prototype.persistVisitor(visitor) {
+    var self = this;
+    var init = visitor.initialize;
+    visitor.initialize = function() {
+        init();
+        visitor.on('change:syncStatus', function() { self.syncVisitor(visitor) });
+    }
+}
+
+
 RestaurantNetwork.prototype.readNetwork = function(restNet) {
     var self = this;
     var baseUrl = "https://api.parse.com/1/classes/Restaurant";
