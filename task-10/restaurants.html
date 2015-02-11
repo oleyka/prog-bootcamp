@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head><title></title>
+<style>
+  .rClass {
+    border: solid 1px;
+    border-radius: 5px;
+    float: left;
+    margin: 8px; padding: 16px;
+    width: 480px;
+  }
+
+  .rClassopen { border-color: #77CC77; background-color: #CCFFCC; }
+  .rClassclosing { border-color: #CC8866; background-color: #FFDDBB; }
+  .rClassclosed { border-color: #999999; background-color: #DDDDDD; }
+
+  .rVisitor { float: left; padding: 4px 8px; margin: 4px; }
+  .rVisitorName { display: inline; }
+
+  .rDisabled { color: #999999; background: #cccccc; }
+</style>
+
+<script src="components/jquery/jquery.js"></script>
+<script src="components/underscore/underscore-1.4.4.js"></script>
+<script src="components/json2/json2.js"></script>
+<script src="components/es5-shim/es5-shim.js"></script>
+<script src="components/es5-shim/es5-sham.js"></script>
+<script type="text/javascript">
+    var require = { urlArgs: (window.location.protocol == 'file:') ? 'bust=' + new Date().getTime() : '' };
+</script>
+<script data-main="reqMain.js" src="components/requirejs/require.js"></script>
+
+<script id="visitor-message" type="text/underscore-template">
+        <input type="button" value="<%- cid %>:<%- lastName %>" id="<%- cid %>">
+</script>
+
+<script id="restaurant-message" type="text/underscore-template">
+    <h3><%- name %></h3>
+    <p>Status: <%- state %></p>
+    <p>Total visitors: <%- currentOccupancy %></p>
+    <form action="#">
+        <input class="rOpen" type="button" value="Open">
+        <input class="rClose" type="button" value="Close">
+        <hr>
+        <p>New visitor:</p>
+        <p>Name <input class="rVisitorName" type="text" name="last_name"> 
+          or <input class="rVisitorName" type="checkbox" name="anon_name" checked> anonymous.
+          <input class="rNewVisitor rVisitorName" type="button" value="Add">
+        </p>
+    </form>
+</script>
+
+<!-- Later: <script src="http://www.parsecdn.com/js/parse-1.2.2.min.js"></script> -->
+</head>
+
+<body>
+<script>
+  require(
+    [
+      'components/flight/lib/logger',
+      'components/flight/tools/debug/debug'
+    ],
+
+    function(withLogging, debug) {
+    	debug.enable(true);
+		  DEBUG.events.logAll(); //log everything
+    	require(['restaurants'], function(init) { // this is where we include 'restaurants.js'
+        	init();
+      	});
+    }
+  );
+</script>
+</body>
+</html>
